@@ -20,25 +20,16 @@ import {
 } from "@/components/ui/sidebar";
 import { Textarea } from "@/components/ui/textarea";
 import { useRef, useState } from "react";
-import { VideoTranscript } from '@/components/VideoTranscript';
-
-interface WorkerAIResponse {
-    response: string;
-}
+import { VideoTranscript } from "@/components/VideoTranscript";
+import { useStore } from "@/hooks/use-store";
+import * as ResizablePrimitive from "react-resizable-panels";
+import { ResizableHandle, ResizablePanel } from "@/components/ui/resizable";
 
 export default function Page() {
-
-  const fetcher = (url: string) => 
-    fetch(url).then((res) => res.json()) 
+  const { messages, addMessage, videoId, setVideoId, transcript } = useStore();
+  const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-  const [question, setQuestion] = useState("");
-  const [messages, setMessages] = useState<WorkerAIResponse[]>([
-    { response: "Hello! How can I help you today?" }
-  ]);
-  const [videoId, setVideoId] = useState('kCc8FmEb1nY');
-  
-
 
   const handleFileSelect = (file: File) => {
     const url = URL.createObjectURL(file);
@@ -49,25 +40,25 @@ export default function Page() {
 
   async function handleSubmit(e: React.KeyboardEvent) {
     if (e.key === "Enter" && !e.shiftKey) {
-    
       e.preventDefault();
       const query = questionRef.current?.value;
-      console.log(query);
+
       if (query?.trim()) {
-
-        setMessages((prev) => [...prev, { response: query }]);
-        setQuestion(query);
-
-        const resp = await fetch(`/api/hello`, {
-          method: 'POST',
-          body: JSON.stringify({ query }),
+        const newMessage = { role: "user", content: query };
+        addMessage(newMessage);
+        console.log("messages", messages);
+        const resp = await fetch(`/api/chat`, {
+          method: "POST",
+          body: JSON.stringify({
+            messages: [...messages, newMessage],
+          }),
         });
 
-        const data = await resp.json() as WorkerAIResponse;
-        setMessages((prev) => [...prev, data.response]);
+        const data = await resp.json();
+        addMessage({ role: "assistant", content: data.response.response });
       }
     }
-  };
+  }
 
   return (
     <SidebarProvider>
@@ -87,43 +78,58 @@ export default function Page() {
           </div>
         </header>
 
-        <div className="flex flex-1 gap-4 p-4 pt-0">
-          <div className="max-w-2xl w-full overflow-hidden flex flex-col gap-4">
-            <iframe 
-              src={`https://www.youtube.com/embed/${videoId}`}
-              className="w-full aspect-video rounded-lg"
-              allowFullScreen
-            />
-            <Button variant="secondary">Get transcript</Button>
-            <VideoTranscript videoId={videoId} />
-          </div>
+        <div className="flex flex-1 p-4 pt-0 ">
+          <ResizablePrimitive.PanelGroup
+            direction="horizontal"
+            className="gap-4"
+          >
+            <ResizablePanel defaultSize={50} minSize={20}>
+              <div className="h-[calc(100vh-6rem)] rounded-lg flex flex-col gap-4">
+                <div>
+                  <iframe
+                    src={`https://www.youtube.com/embed/${videoId}`}
+                    className="w-full aspect-video rounded-lg"
+                    allowFullScreen
+                  />
+                </div>
 
-          <div className="w-full flex flex-col justify-between">
-            <div className="flex flex-col gap-4">
-              <div className="flex gap-4">
-                <Button variant="secondary">Chat</Button>
-                <Button variant="secondary">Summary</Button>
+                <Button variant="secondary">Get transcript</Button>
+                <div className="flex-1 min-h-0 overflow-y-auto">
+                  <VideoTranscript videoId={videoId} />
+                </div>
               </div>
+            </ResizablePanel>
 
-              <div className="messages">
-                <ul className="flex flex-col gap-2">
-                  {messages.map((message, index) => (
-                    <li className="bg-gray-100 p-2 rounded-xl" key={index}>
-                      {message.response}
-                    </li>
-                  ))}
-                </ul>
+            <ResizableHandle withHandle />
+
+            <ResizablePanel defaultSize={80} minSize={30}>
+              <div className="h-[calc(100vh-6rem)] flex flex-col justify-between">
+                <div className="flex flex-col gap-4">
+                  <div className="flex gap-4">
+                    <Button variant="secondary">Chat</Button>
+                    <Button variant="secondary">Summary</Button>
+                  </div>
+
+                  <div className="messages flex-1 overflow-y-auto">
+                    <ul className="flex flex-col gap-2">
+                      {messages.map((message, index) => (
+                        <li className="bg-gray-100 p-2 rounded-xl" key={index}>
+                          {message.content}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+                <Textarea
+                  onKeyDown={handleSubmit}
+                  placeholder="Ask a question"
+                  className="min-h-[80px] resize-none"
+                  ref={questionRef}
+                />
               </div>
-            </div>
-
-
-            <Textarea
-              onKeyDown={handleSubmit}
-              placeholder="Ask a question"
-              className="min-h-[80px] resize-none"
-              ref={questionRef}
-            />
-          </div>
+            </ResizablePanel>
+          </ResizablePrimitive.PanelGroup>
         </div>
       </SidebarInset>
     </SidebarProvider>

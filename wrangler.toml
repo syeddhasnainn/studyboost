@@ -13,3 +13,7 @@ assets = { directory = ".worker-next/assets", binding = "ASSETS" }
 
 [ai]
 binding = "AI"
+
+[[vectorize]]
+binding = "VECTORIZE"
+index_name = "studyninja-dev"

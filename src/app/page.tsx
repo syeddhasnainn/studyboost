@@ -5,7 +5,6 @@ import { Icons } from "@/components/icons"
 export default function Page() {
   return (
     <main className="min-h-screen bg-black py-12 text-white">
-      {/* Navigation - Matching the dark, floating navbar style */}
       <nav className="fixed top-4 left-1/2 -translate-x-1/2 w-[90%] max-w-2xl mx-auto px-6 py-3 flex items-center justify-between bg-zinc-900/50 backdrop-blur-lg rounded-3xl border border-zinc-800">
         <div className="flex items-center gap-2">
           <div className="h-6 w-6">
