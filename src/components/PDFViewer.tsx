@@ -24,37 +24,35 @@ function PDFViewer({ url, className }: PDFViewerProps) {
   const { pdfUrl, setPdfUrl, resourceId } = useStore();
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // useEffect(() => {
-  //   const processPdf = async () => {
-  //     if (!pdfUrl) return;
-  //     const buffer = await fetch(pdfUrl).then((res) => res.arrayBuffer());
+  useEffect(() => {
+    const processPdf = async () => {
+      if (!url || !resourceId) return;
+      
+      const buffer = await fetch(url).then((res) => res.arrayBuffer());
+      const pdf = await getDocumentProxy(new Uint8Array(buffer));
+      const { text } = await extractText(pdf);
 
-  //     const pdf = await getDocumentProxy(new Uint8Array(buffer));
-  //     const { text } = await extractText(pdf);
-
-  //     try {
-  //       const vectorUploadResponse = await fetch(`/api/vectors`, {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify({ chunks:text, resourceId }),
-  //       });
-
-  //       const result = await vectorUploadResponse.json();
-  //     } catch (error) {
-  //       console.error("Failed to upload pdf text:", error);
-  //     }
-  //   };
-  //   processPdf();
-  // }, [pdfUrl]);
+      try {
+        await fetch(`/api/vectors`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ chunks: text, resourceId }),
+        });
+      } catch (error) {
+        console.error("Failed to upload pdf text:", error);
+      }
+    };
+    
+    processPdf();
+  }, [url, resourceId]);
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
     const resizeObserver = new ResizeObserver(() => {
-      // Force a re-render with PageWidth when container size changes
       if (zoomPluginInstance.zoomTo) {
         zoomPluginInstance.zoomTo(SpecialZoomLevel.PageWidth);
       }
