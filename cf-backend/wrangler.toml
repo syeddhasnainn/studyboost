@@ -1,0 +1,48 @@
+name = "cf-backend"
+main = "src/index.ts"
+compatibility_date = "2024-11-28"
+
+
+[ai]
+binding = "AI"
+
+[[vectorize]]
+binding = "VECTORIZE"
+index_name = "studyninja-test"
+
+
+[[d1_databases]]
+binding = "DB"
+database_name = "studymore-test"
+database_id = "54a3014a-19d9-4bba-b36d-5125cd4cb13b"
+
+[[r2_buckets]]
+binding = "MY_BUCKET"
+bucket_name = "studymore-dev"
+preview_bucket_name = "studymore-test"
+
+
+# compatibility_flags = [ "nodejs_compat" ]
+
+# [vars]
+# MY_VAR = "my-variable"
+
+# [[kv_namespaces]]
+# binding = "MY_KV_NAMESPACE"
+# id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+# [[r2_buckets]]
+# binding = "MY_BUCKET"
+# bucket_name = "my-bucket"
+
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "my-database"
+# database_id = ""
+
+# [ai]
+# binding = "AI"
+
+# [observability]
+# enabled = true
+# head_sampling_rate = 1
