@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import Together from "together-ai";
 import { YoutubeTranscript } from "youtube-transcript";
+import { cors } from "hono/cors";
 
 interface Bindings {
   MY_BUCKET: R2Bucket;
@@ -22,6 +23,14 @@ app.use("*", async (c, next) => {
   }
   await next();
 });
+
+app.use(
+  "*",
+  cors({
+    origin: ["http://localhost:3000"], // Add your domains
+    credentials: true,
+  })
+);
 
 function iteratorToStream(iterator: any) {
   return new ReadableStream({
@@ -51,15 +60,6 @@ async function* makeIterator(messages: any) {
     }
   }
 }
-
-app.get("/", async (c) => {
-  const stream = await together.chat.completions.create({
-    model: "meta-llama/Llama-3-8b-chat-hf",
-    messages: [{ role: "user", content: "Hello, how are you?" }],
-  });
-
-  return c.json(stream);
-});
 
 app.post("/chat", async (c) => {
   const { message, resourceId, chatId } = await c.req.json();
@@ -134,9 +134,9 @@ app.post("/vectors", async (c) => {
   try {
     const { chunks, resourceId } = await c.req.json();
 
-    if (!chunks?.length || !resourceId) {
-      return c.json({ error: "Missing required fields" }, 400);
-    }
+    // if (!chunks?.length || !resourceId) {
+    //   return c.json({ error: "Missing required fields" }, 400);
+    // }
 
     if (!c.env?.AI || !c.env?.VECTORIZE) {
       return c.json({ error: "Vector service unavailable" }, 503);
@@ -188,22 +188,24 @@ app.post("/db", async (c) => {
 
 app.get("/db/check", async (c) => {
   try {
-    const resourceId = c.req.query("resourceId");
+    const chatId = c.req.query("chatId");
 
-    if (!resourceId) {
+    if (!chatId) {
       return c.json({ error: "Resource ID is required" }, 400);
     }
 
     const result = await c.env.DB.prepare(
-      "SELECT * FROM chats WHERE resource_id = ? LIMIT 1"
+      "SELECT * FROM chats WHERE chat_id = ? LIMIT 1"
     )
-      .bind(resourceId)
+      .bind(chatId)
       .first();
 
     return c.json({ chat: result });
   } catch (error) {
     return c.json({ error: "Failed to check database" }, 500);
   }
+
+  const resourceId = c.req.query("resourceId");
 });
 
 app.get("/db/getMessages", async (c) => {

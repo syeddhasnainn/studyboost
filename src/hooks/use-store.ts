@@ -1,16 +1,35 @@
 import { create } from "zustand";
-import { devtools, persist } from 'zustand/middleware'
 
 type Status = "idle" | "loading" | "success" | "error";
+
+interface Message {
+  role: string
+  content: string;
+}
+interface TranscriptEntry {
+  offset: string;
+  text: string;
+}
+
 interface StoreState {
-  messages: Array<{ role: string; content: string }>;
-  addMessage: (message: { role: string; content: string }) => void;
-  videoId: string;
-  setVideoId: (videoId: string) => void;
-  transcript: string;
-  setTranscript: (transcript: string) => void;
+  messages: Array<Message>;
+  addMessage: (message: Message) => void;
+  setMessages: (
+    messages: Array<Message> | ((prev: Array<Message>) => Array<Message>)
+  ) => void;
+
+  resourceId: string | null;
+  setResourceId: (id: string) => void;
+  transcript: Array<TranscriptEntry>;
+  setTranscript: (transcript: Array<TranscriptEntry>) => void;
   status: Status;
   setStatus: (status: Status) => void;
+
+  chatId: string | null;
+  setChatId: (chatId: string | null) => void;
+
+  resourceUrl: string | null;
+  setResourceUrl: (resourceUrl: string | null) => void;
 }
 
 export const useStore = create<StoreState>((set) => ({
@@ -18,14 +37,23 @@ export const useStore = create<StoreState>((set) => ({
   addMessage: (message) =>
     set((state) => ({ messages: [...state.messages, message] })),
 
-  videoId: "HB9YVYntdbY",
+  setMessages: (messages) =>
+    set((state) => ({
+      messages:
+        typeof messages === "function" ? messages(state.messages) : messages,
+    })),
+  resourceId: null,
+  setResourceId: (id) => set({ resourceId: id }),
 
-  setVideoId: (videoId) => set({ videoId }),
-  
-  
-  transcript: "",
+  transcript: [],
   setTranscript: (transcript) => set({ transcript }),
 
   status: "idle",
   setStatus: (status) => set({ status }),
+
+  chatId: null,
+  setChatId: (chatId) => set({ chatId }),
+
+  resourceUrl: null,
+  setResourceUrl: (resourceUrl) => set({ resourceUrl }),
 }));

@@ -21,19 +21,24 @@ function PDFViewer({ url, className }: PDFViewerProps) {
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
   const toolbarPluginInstance = toolbarPlugin();
   const zoomPluginInstance = zoomPlugin();
-  const { pdfUrl, setPdfUrl, resourceId } = useStore();
+  const { resourceUrl, resourceId } = useStore();
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const processPdf = async () => {
       if (!url || !resourceId) return;
-      
+      // const isExistingChat = await fetch(
+      //   `/api/db/check?resourceId=${resourceId}`
+      // );
+      // const { chat } = (await isExistingChat.json()) as { chat: any };
+      // if (chat) return;
+
       const buffer = await fetch(url).then((res) => res.arrayBuffer());
       const pdf = await getDocumentProxy(new Uint8Array(buffer));
       const { text } = await extractText(pdf);
 
       try {
-        await fetch(`/api/vectors`, {
+        await fetch(`http://localhost:8787/vectors`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -44,7 +49,7 @@ function PDFViewer({ url, className }: PDFViewerProps) {
         console.error("Failed to upload pdf text:", error);
       }
     };
-    
+
     processPdf();
   }, [url, resourceId]);
 
@@ -68,7 +73,7 @@ function PDFViewer({ url, className }: PDFViewerProps) {
   return (
     <div
       ref={containerRef}
-      className={`${className} h-[calc(100vh-6rem)] border rounded-lg overflow-hidden`}
+      className={`${className} h-[calc(100vh-6rem)] border rounded-lg overflow-hidden `}
     >
       <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
         <Viewer
