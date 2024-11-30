@@ -38,7 +38,7 @@ export default function Page() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const youtubeUrl = inputRef.current?.value.trim();
-    
+
     setError(null);
 
     if (!youtubeUrl) {
@@ -54,7 +54,7 @@ export default function Page() {
     try {
       setIsLoading(true);
       setProgress(10);
-      
+
       const youtubeId = youtubeUrl.split("v=")[1];
       const chatId = nanoid(10);
       setResourceId(youtubeId);
@@ -113,7 +113,7 @@ export default function Page() {
       setIsLoading(false);
       setProgress(0);
     }
-  }
+  };
 
   const { setResourceUrl } = useStore();
 
@@ -151,7 +151,6 @@ export default function Page() {
         router.push(`/chat/${id}`);
       } catch (error) {
         console.error("Error uploading file:", error);
-        // You might want to add error handling UI here
       }
     }
   };
@@ -196,7 +195,7 @@ export default function Page() {
               autoFocus
               ref={inputRef}
               className={`w-full bg-white rounded-xl py-6 pl-12 pr-12 text-zinc-700 placeholder:text-zinc-500 outline-none focus-visible:ring-0 ${
-                error ? 'border-red-500' : ''
+                error ? "border-red-500" : ""
               }`}
               placeholder="Upload PDF or paste a YouTube link"
             />
@@ -204,19 +203,23 @@ export default function Page() {
               className="absolute left-4 top-1/2 -translate-y-1/2 flex gap-3 cursor-pointer"
               onClick={() => !isLoading && fileInputRef.current?.click()}
             >
-              <PaperclipIcon className={`h-5 w-5 text-zinc-500 hover:text-zinc-400 ${isLoading ? 'opacity-50' : ''}`} />
+              <PaperclipIcon
+                className={`h-5 w-5 text-zinc-500 hover:text-zinc-400 ${
+                  isLoading ? "opacity-50" : ""
+                }`}
+              />
             </div>
           </form>
 
-          {error && (
-            <p className="text-sm text-red-500 mt-2">{error}</p>
-          )}
+          {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
 
           {isLoading && (
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                <span className="text-sm text-zinc-500">Processing your content...</span>
+                <span className="text-sm text-zinc-500">
+                  Processing your content...
+                </span>
               </div>
               <Progress value={progress} className="h-2" />
             </div>

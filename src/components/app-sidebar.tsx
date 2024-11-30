@@ -13,6 +13,7 @@ import {
   Settings2,
   Sparkles,
   Trash2,
+  Plus
 } from "lucide-react";
 
 import { NavFavorites } from "./nav-favorites";
@@ -50,7 +51,7 @@ const data = {
     {
       title: "New Chat",
       url: "#",
-      icon: Search,
+      icon: Plus,
     },
   ],
   navSecondary: [

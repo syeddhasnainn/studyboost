@@ -145,121 +145,97 @@ export default function Page({ params }: { params: { id: string } }) {
   }, [params.id, setResourceId, setResourceUrl, setChatId]);
 
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2">
-          <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
-            {/* <Separator orientation="vertical" className="mr-2 h-4" /> */}
-            {/* <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbPage>PDF Viewer</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb> */}
-          </div>
-        </header>
-
-        <div className="flex flex-1 p-4 pt-0 ">
-          <ResizablePrimitive.PanelGroup
-            direction="horizontal"
-            className="gap-4"
-          >
-            <ResizablePanel defaultSize={60} minSize={50}>
-              {!resourceUrl?.includes("youtube") ? (
-                <div className="h-[calc(100vh-6rem)] rounded-lg flex flex-col gap-4">
-                  <PDFViewer url={resourceUrl} />
-                </div>
-              ) : (
-                <div className="h-[calc(100vh-6rem)] rounded-lg flex flex-col gap-4">
-                  <div>
-                    <iframe
-                      src={`https://www.youtube.com/embed/${resourceId}`}
-                      className="w-full aspect-video rounded-lg"
-                      allowFullScreen
-                    />
-                  </div>
-
-                  <Button variant="secondary">Get transcript</Button>
-                  <div className="flex-1 min-h-0 overflow-y-auto">
-                    <VideoTranscript />
-                  </div>
-                </div>
-              )}
-            </ResizablePanel>
-
-            <ResizableHandle withHandle />
-
-            <ResizablePanel defaultSize={40} minSize={30}>
-              <div className="h-[calc(100vh-6rem)] flex flex-col">
-                <div className="flex gap-4 mb-4">
-                  <Button variant="secondary">Chat</Button>
-                  <Button variant="secondary">Summary</Button>
-                </div>
-
-                <div className="flex-1 overflow-hidden">
-                  <div className="h-full overflow-y-auto px-4 pb-4">
-                    <ul className="flex flex-col gap-2">
-                      {messages.map((message, index) => (
-                        <li
-                          className={`p-3 rounded-xl max-w-[85%] ${
-                            message.role === "user"
-                              ? "bg-gray-200 ml-auto"
-                              : "bg-gray-100"
-                          }`}
-                          key={index}
-                        >
-                          {message.content}
-                        </li>
-                      ))}
-                      {isLoading && (
-                        <li className="flex items-center gap-2 p-3">
-                          <div className="animate-spin">
-                            <svg
-                              className="w-4 h-4 text-gray-400"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                            >
-                              <circle
-                                className="opacity-25"
-                                cx="12"
-                                cy="12"
-                                r="10"
-                                stroke="currentColor"
-                                strokeWidth="4"
-                              ></circle>
-                              <path
-                                className="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                              ></path>
-                            </svg>
-                          </div>
-                          <span className="text-sm text-gray-500">
-                            Thinking...
-                          </span>
-                        </li>
-                      )}
-                    </ul>
-                  </div>
-                </div>
-                <div className="pt-4">
-                  <Textarea
-                    autoFocus
-                    onKeyDown={handleSubmit}
-                    placeholder="Ask a question"
-                    className="min-h-[80px] resize-none"
-                    ref={questionRef}
-                  />
-                </div>
+    <div className="flex flex-1 p-4 my-14 pt-0 ">
+      <ResizablePrimitive.PanelGroup direction="horizontal" className="gap-4">
+        <ResizablePanel defaultSize={60} minSize={50}>
+          {!resourceUrl?.includes("youtube") ? (
+            <div className="h-[calc(100vh-6rem)] rounded-lg flex flex-col gap-4">
+              <PDFViewer url={resourceUrl} />
+            </div>
+          ) : (
+            <div className="h-[calc(100vh-6rem)] rounded-lg flex flex-col gap-4">
+              <div>
+                <iframe
+                  src={`https://www.youtube.com/embed/${resourceId}`}
+                  className="w-full aspect-video rounded-lg"
+                  allowFullScreen
+                />
               </div>
-            </ResizablePanel>
-          </ResizablePrimitive.PanelGroup>
-        </div>
-      </SidebarInset>
-    </SidebarProvider>
+
+              <Button variant="secondary">Get transcript</Button>
+              <div className="flex-1 min-h-0 overflow-y-auto">
+                <VideoTranscript />
+              </div>
+            </div>
+          )}
+        </ResizablePanel>
+
+        <ResizableHandle withHandle />
+
+        <ResizablePanel defaultSize={40} minSize={30}>
+          <div className="h-[calc(100vh-6rem)] flex flex-col">
+            <div className="flex gap-4 mb-4">
+              <Button variant="secondary">Chat</Button>
+              <Button variant="secondary">Summary</Button>
+            </div>
+
+            <div className="flex-1 overflow-hidden">
+              <div className="h-full overflow-y-auto px-4 pb-4">
+                <ul className="flex flex-col gap-2">
+                  {messages.map((message, index) => (
+                    <li
+                      className={`p-3 rounded-xl max-w-[85%] ${
+                        message.role === "user"
+                          ? "bg-gray-200 ml-auto"
+                          : "bg-gray-100"
+                      }`}
+                      key={index}
+                    >
+                      {message.content}
+                    </li>
+                  ))}
+                  {isLoading && (
+                    <li className="flex items-center gap-2 p-3">
+                      <div className="animate-spin">
+                        <svg
+                          className="w-4 h-4 text-gray-400"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                      </div>
+                      <span className="text-sm text-gray-500">Thinking...</span>
+                    </li>
+                  )}
+                </ul>
+              </div>
+            </div>
+            <div className="pt-4">
+              <Textarea
+                autoFocus
+                onKeyDown={handleSubmit}
+                placeholder="Ask a question"
+                className="min-h-[80px] resize-none"
+                ref={questionRef}
+              />
+            </div>
+          </div>
+        </ResizablePanel>
+      </ResizablePrimitive.PanelGroup>
+    </div>
   );
 }
