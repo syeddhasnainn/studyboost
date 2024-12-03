@@ -27,7 +27,7 @@ app.use("*", async (c, next) => {
 app.use(
   "*",
   cors({
-    origin: ["http://localhost:3000"], // Add your domains
+    origin: ["http://localhost:3000"],
     credentials: true,
   })
 );
@@ -63,6 +63,7 @@ async function* makeIterator(messages: any) {
 
 app.post("/chat", async (c) => {
   const { message, resourceId, chatId } = await c.req.json();
+  console.log("resource id received", resourceId);
 
   const existingMessages = await c.env.DB.prepare(
     `
@@ -96,6 +97,7 @@ app.post("/chat", async (c) => {
     topK: 5,
     returnMetadata: "all",
   });
+  console.log("embeddings with filter", embeddings);
 
   console.log("queryEmbeddings", queryEmbeddings);
 
@@ -210,11 +212,9 @@ app.put("/chat", async (c) => {
 app.post("/vectors", async (c) => {
   try {
     const { chunks, resourceId } = await c.req.json();
-
-    // if (!chunks?.length || !resourceId) {
-    //   return c.json({ error: "Missing required fields" }, 400);
-    // }
-
+    if (!chunks?.length || !resourceId) {
+      return c.json({ error: "Missing required fields" }, 400);
+    }
     if (!c.env?.AI || !c.env?.VECTORIZE) {
       return c.json({ error: "Vector service unavailable" }, 503);
     }
@@ -282,7 +282,7 @@ app.get("/db/check", async (c) => {
     return c.json({ error: "Failed to check database" }, 500);
   }
 
-  const resourceId = c.req.query("resourceId");
+  // const resourceId = c.req.query("resourceId");
 });
 
 app.get("/db/getMessages", async (c) => {

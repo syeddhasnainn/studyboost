@@ -50,7 +50,7 @@ const data = {
   navMain: [
     {
       title: "New Chat",
-      url: "#",
+      url: "/chat",
       icon: Plus,
     },
   ],

@@ -137,6 +137,7 @@ export default function Page({ params }: { params: { id: string } }) {
         `http://localhost:8787/db/check?chatId=${params.id}`
       );
       const { chat } = (await existingChat.json()) as { chat: any };
+      console.log("chat from db", chat);
       setResourceId(chat.resource_id);
       setChatId(chat.chat_id);
       setResourceUrl(chat.resource_link);
@@ -144,13 +145,14 @@ export default function Page({ params }: { params: { id: string } }) {
     checkDb();
   }, [params.id, setResourceId, setResourceUrl, setChatId]);
 
+  console.log("resource url from the chat page", resourceUrl);
   return (
     <div className="flex flex-1 p-4 my-14 pt-0 ">
       <ResizablePrimitive.PanelGroup direction="horizontal" className="gap-4">
         <ResizablePanel defaultSize={60} minSize={50}>
           {!resourceUrl?.includes("youtube") ? (
             <div className="h-[calc(100vh-6rem)] rounded-lg flex flex-col gap-4">
-              <PDFViewer url={resourceUrl} />
+              {resourceUrl && <PDFViewer url={resourceUrl} />}
             </div>
           ) : (
             <div className="h-[calc(100vh-6rem)] rounded-lg flex flex-col gap-4">

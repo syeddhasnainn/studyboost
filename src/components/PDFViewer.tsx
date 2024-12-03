@@ -36,6 +36,7 @@ function PDFViewer({ url, className }: PDFViewerProps) {
       const buffer = await fetch(url).then((res) => res.arrayBuffer());
       const pdf = await getDocumentProxy(new Uint8Array(buffer));
       const { text } = await extractText(pdf);
+      console.log("pdf text", text);
 
       try {
         await fetch(`http://localhost:8787/vectors`, {

@@ -18,8 +18,6 @@ interface TranscriptResponse {
   transcript: TranscriptEntry[];
 }
 
-const fetcher = (url: string) =>
-  fetch(url).then((res) => res.json()) as Promise<TranscriptResponse>;
 
 function isValidYoutubeUrl(url: string): boolean {
   const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/;
@@ -79,20 +77,25 @@ export default function Page() {
           .join(" ");
         chunks.push(mergedText);
       }
+      try {
+        setProgress(70);
+        const vectorUploadResponse = await fetch(
+          `http://localhost:8787/vectors`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ chunks, resourceId: youtubeId }),
+          }
+        );
+  
+        const result = await vectorUploadResponse.json();
+        console.log(result);
+      } catch (error) {
+        console.error("Error uploading vectors:", error);
+      }
 
-      setProgress(70);
-      const vectorUploadResponse = await fetch(
-        `http://localhost:8787/vectors`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ chunks, youtubeId }),
-        }
-      );
-
-      const result = await vectorUploadResponse.json();
       setProgress(90);
 
       const db = await fetch("http://localhost:8787/db", {
