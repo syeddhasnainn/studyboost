@@ -5,12 +5,12 @@ import { Icons } from "@/components/icons";
 export default function Page() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-white via-blue-50 to-white py-12 text-zinc-800">
-      <nav className="fixed top-4 left-1/2 -translate-x-1/2 w-[90%] max-w-2xl mx-auto px-6 py-3 flex items-center justify-between bg-white/70 backdrop-blur-xl rounded-3xl border border-white/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.08)] transition-all duration-300 hover:bg-white/80 hover:shadow-[0_8px_32px_0_rgba(0,0,0,0.12)]">
+      <nav className="fixed left-1/2 -translate-x-1/2 w-[90%] max-w-2xl mx-auto px-6 py-3 flex items-center justify-between bg-white/70 backdrop-blur-xl rounded-3xl border border-white/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.08)] transition-all duration-300 hover:bg-white/80 hover:shadow-[0_8px_32px_0_rgba(0,0,0,0.12)] z-50">
         <div className="flex items-center gap-2 group">
           <div className="h-6 w-6 transition-transform duration-300 group-hover:scale-110">
             <Icons.logo className="h-6 w-6 text-blue-600" />
           </div>
-          <span className="text-base font-medium">StudyMore</span>
+          <span className="text-base font-medium">StudyBoost</span>
         </div>
 
         <Button className="text-sm rounded-2xl text-white bg-blue-600 hover:bg-blue-700 shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 font-medium px-6 py-2">
@@ -263,12 +263,10 @@ export default function Page() {
             <div className="flex items-center gap-3 mb-6">
               <Icons.logo className="h-8 w-8 text-blue-600" />
               <span className="text-[15px] font-medium text-zinc-800">
-                StudyMore
+                StudyBoost
               </span>
             </div>
-            <p className="text-[13px] text-zinc-600">
-              © StudyMore Inc. {new Date().getFullYear()}
-            </p>
+            <p className="text-[13px] text-zinc-600">&copy; StudyBoost Inc. {new Date().getFullYear()}</p>
           </div>
 
           <div className="col-span-1">

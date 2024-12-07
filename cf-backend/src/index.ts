@@ -2,6 +2,8 @@ import { Hono } from "hono";
 import Together from "together-ai";
 import { YoutubeTranscript } from "youtube-transcript";
 import { cors } from "hono/cors";
+import { z } from "zod";
+import { zodToJsonSchema } from "zod-to-json-schema";
 
 interface Bindings {
   MY_BUCKET: R2Bucket;
@@ -64,6 +66,8 @@ async function* makeIterator(messages: any) {
 app.post("/chat", async (c) => {
   const { message, resourceId, chatId } = await c.req.json();
   console.log("resource id received", resourceId);
+  console.log("chat id received", chatId);
+  console.log("message received", message);
 
   const existingMessages = await c.env.DB.prepare(
     `
@@ -80,7 +84,8 @@ app.post("/chat", async (c) => {
 
   if (message.role === "user") {
     await c.env.DB.prepare(
-      `INSERT INTO chat_messages (chat_id, role, content) VALUES (?, ?, ?)`
+      `INSERT INTO chat_messages (chat_id, role, content, created_at) 
+       VALUES (?, ?, ?, datetime('now'))`
     )
       .bind(chatId, message.role, message.content)
       .run();
@@ -110,77 +115,14 @@ app.post("/chat", async (c) => {
   const messagesForAI = [
     {
       role: "system",
-      content: `<rag-prompt>
-    <instructions>
-        You are an advanced AI assistant designed to provide comprehensive, accurate, and contextually relevant information through a retrieval-augmented generation approach.
-
-        Core Responsibilities:
-        - Retrieve and synthesize relevant information from available knowledge sources
-        - Generate clear, well-structured responses
-        - Maintain high standards of accuracy and clarity
-        - Provide contextual and nuanced explanations
-        - Cite sources and be transparent about information origins
-    </instructions>
-
-    <context>
-        ${context}
-    </context>
-
-    <retrieval-guidelines>
-        1. Information Prioritization:
-        - Prioritize most recent and relevant sources
-        - Cross-reference multiple knowledge bases
-        - Verify source credibility and accuracy
-
-        2. Relevance Criteria:
-        - Semantic match with original query
-        - Contextual significance
-        - Comprehensiveness of information
-        - Source reliability and expertise
-
-        3. Response Generation Principles:
-        - Synthesize information coherently
-        - Maintain logical flow
-        - Provide clear explanations
-        - Include relevant examples or analogies
-    </retrieval-guidelines>
-
-    <output-requirements>
-        Response Structure:
-        1. Clear, concise introduction
-        2. Structured main explanation
-        3. Supporting evidence or examples
-        4. Contextual insights
-        5. Summary or key takeaways
-
-        Additional Guidelines:
-        - Use precise, professional language
-        - Break down complex concepts
-        - Highlight important points
-        - Address potential follow-up questions
-    </output-requirements>
-
-    <error-handling>
-        Scenarios to Manage:
-        - Insufficient information
-        - Conflicting sources
-        - Ambiguous queries
-
-        Strategies:
-        - Clearly communicate information limitations
-        - Provide partial, most relevant information
-        - Suggest additional research directions
-        - Highlight source conflicts
-        - Offer balanced perspectives
-    </error-handling>
-
-    <citation-protocol>
-        - Always attribute retrieved information to sources
-        - Provide context about source credibility
-        - Distinguish between direct quotes and synthesized information
-        - Acknowledge knowledge limitations
-    </citation-protocol>
-</rag-prompt>`,
+      content: `<instructions>
+      You are a helpful assistant. You will be given a context from a video or a document. Your job is to answer the user's question based on the context. Do not mention the context in your response. And do not use the word "context" in your response.
+      </instructions>
+      
+      <context>
+      ${context}
+      </context>
+      `,
     },
     ...existingMessages.results,
     message,
@@ -200,7 +142,8 @@ app.put("/chat", async (c) => {
   const { chatId, content } = await c.req.json();
 
   await c.env.DB.prepare(
-    `INSERT INTO chat_messages (chat_id, role, content) VALUES (?, ?, ?)`
+    `INSERT INTO chat_messages (chat_id, role, content, created_at) 
+     VALUES (?, ?, ?, datetime('now'))`
   )
     .bind(chatId, "assistant", content)
     .run();
@@ -325,7 +268,51 @@ app.get("/youtube/transcript", async (c) => {
 
   try {
     const transcript = await YoutubeTranscript.fetchTranscript(videoId);
-    return c.json({ transcript });
+    if (!transcript.length || transcript[0].lang !== "en") {
+      return c.json({ error: "No transcript found" }, 400);
+    }
+    const textForSummary = transcript
+      .map((entry) => `${entry.text} - ${entry.offset}`)
+      .join(" | ");
+
+    console.log("textForSummary", textForSummary);
+
+    const summarySchema = z.array(
+      z.object({
+        title: z.string().describe("title of the chapter"),
+        summary: z.string().describe("summary of the chapter"),
+        timestamp: z.number().describe("timestamp of the chapter"),
+      })
+    );
+
+
+    const jsonSchema = zodToJsonSchema(summarySchema, "summarySchema");
+
+    const processedSummary = await together.chat.completions.create({
+      messages: [
+        {
+          role: "system",
+          content:
+            "The following is a youtube transcript with timestamps. Analyze the text and make multiple chapters with title, summary and the starting timestamp only that is in the transcript. The chapters should always be in the same order as the transcript. The summaries should be atleast 50-100 words. Only answer in JSON.",
+        },
+        {
+          role: "user",
+          content: textForSummary,
+        },
+      ],
+      model: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
+      // @ts-ignore
+      response_format: { type: "json_object", schema: jsonSchema },
+    });
+
+    if (processedSummary?.choices?.[0]?.message?.content) {
+      const summary = JSON.parse(
+        processedSummary?.choices?.[0]?.message?.content
+      );
+      console.log(summary);
+      return c.json({ summary, transcript });
+    }
+
   } catch (error) {
     return c.json({ error: "Failed to fetch transcript" }, 500);
   }

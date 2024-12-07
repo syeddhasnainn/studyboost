@@ -22,6 +22,9 @@ interface StoreState {
   setResourceId: (id: string) => void;
   transcript: Array<TranscriptEntry>;
   setTranscript: (transcript: Array<TranscriptEntry>) => void;
+  summary: Array<any>;
+  setSummary: (summary: Array<any>) => void;
+
   status: Status;
   setStatus: (status: Status) => void;
 
@@ -47,6 +50,9 @@ export const useStore = create<StoreState>((set) => ({
 
   transcript: [],
   setTranscript: (transcript) => set({ transcript }),
+
+  summary: [],
+  setSummary: (summary) => set({ summary }),
 
   status: "idle",
   setStatus: (status) => set({ status }),

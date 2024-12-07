@@ -16,6 +16,7 @@ interface TranscriptEntry {
 
 interface TranscriptResponse {
   transcript: TranscriptEntry[];
+  summary: Array<any>;
 }
 
 
@@ -28,7 +29,7 @@ export default function Page() {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
-  const { setResourceId, setChatId, setTranscript, resourceUrl } = useStore();
+  const { setResourceId, setChatId, setTranscript, resourceUrl, setSummary } = useStore();
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -64,7 +65,9 @@ export default function Page() {
         `http://localhost:8787/youtube/transcript?videoId=${youtubeId}`
       );
       const data = (await transcriptResponse.json()) as TranscriptResponse;
+      
       setTranscript(data.transcript);
+      setSummary(data.summary);
 
       setProgress(50);
       const CHUNK_SIZE = 50;

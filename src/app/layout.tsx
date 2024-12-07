@@ -5,8 +5,8 @@ import "./globals.css";
 
 // const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
-  title: "Studymore",
-  description: "Studymore",
+  title: "StudyBoost - AI-Powered Learning Platform",
+  description: "StudyBoost is an AI-powered learning platform that transforms educational content into interactive study sessions.",
 };
 
 export default function RootLayout({

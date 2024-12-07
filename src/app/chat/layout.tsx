@@ -5,15 +5,14 @@ import {
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Button } from "@/components/ui/button";
-import { GeistSans } from "geist/font/sans";
 
-export default function ChatLayout({
+export default async function ChatLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <div className="h-screen flex flex-col ">
+    <div className="h-screen flex flex-col">
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset className="flex-1 flex flex-col">
@@ -22,7 +21,12 @@ export default function ChatLayout({
               <SidebarTrigger className="-ml-1" />
             </div>
           </header>
-          <Button className="absolute top-4 right-4 rounded-full" variant="secondary">Beta</Button>
+          <Button
+            className="absolute top-4 right-4 rounded-full"
+            variant="secondary"
+          >
+            Beta
+          </Button>
           {children}
         </SidebarInset>
       </SidebarProvider>

@@ -13,7 +13,8 @@ import {
   Settings2,
   Sparkles,
   Trash2,
-  Plus
+  Plus,
+  ChevronsUp,
 } from "lucide-react";
 
 import { NavFavorites } from "./nav-favorites";
@@ -32,8 +33,8 @@ import { NavUser } from "./nav-user";
 const data = {
   teams: [
     {
-      name: "Acme Inc",
-      logo: Command,
+      name: "StudyBoost",
+      logo: ChevronsUp,
       plan: "Enterprise",
     },
     {
@@ -242,14 +243,42 @@ const data = {
   ],
 };
 
-
 const user = {
-  name: "John Doe",
-  email: "john.doe@example.com",
+  name: "Hasnain",
+  email: "syedhasnain@gmail.com",
   avatar: "https://github.com/shadcn.png",
 };
 
+const test = [
+  {
+    name: "John three",
+    url: "#",
+  }, 
+
+  {
+    name: "John Doe",
+    url: "#",
+  },
+]
+
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+
+  const [test, setTest] = React.useState([]);
+
+  const fetchChats = async () => {
+    const response = await fetch("http://localhost:8787/db/getChats");
+    const {results} = await response.json() as any
+    const chats = results.map((chat : any) => ({
+      name: chat.chat_id,
+      url: "#",
+    })).slice(0, 5);
+    setTest(chats);
+  }
+
+  React.useEffect(() => {
+    fetchChats();
+  }, []);
+
   return (
     <Sidebar className="border-r-0" {...props}>
       <SidebarHeader>
@@ -257,8 +286,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={data.navMain} />
       </SidebarHeader>
       <SidebarContent>
-        <NavFavorites favorites={data.favorites} />
-        <NavWorkspaces workspaces={data.workspaces} />
+        <NavFavorites favorites={test} />
+        {/* <NavWorkspaces workspaces={data.workspaces} /> */}
       </SidebarContent>
       <NavUser user={user} />
 

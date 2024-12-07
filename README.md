@@ -1,4 +1,4 @@
-# Studymore
+# StudyBoost
 
 An AI-powered learning platform that transforms educational content into interactive study sessions.
 
