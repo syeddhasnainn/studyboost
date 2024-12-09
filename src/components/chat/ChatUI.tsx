@@ -22,6 +22,7 @@ import { useStore } from "@/hooks/use-store";
 import * as ResizablePrimitive from "react-resizable-panels";
 import { ResizableHandle, ResizablePanel } from "@/components/ui/resizable";
 import { ChatMessagesProps } from "@/types/chat";
+import { useToast } from "@/hooks/use-toast";
 export interface ChatInfoProps {
   chat: {
     chat_id: string;
@@ -112,6 +113,9 @@ export function ChatUI({
     }
   }
 
+  const {toast} = useToast()
+
+
   return (
     <div className="flex flex-1 p-4 my-14 pt-0 ">
       <ResizablePrimitive.PanelGroup direction="horizontal" className="gap-4">
@@ -200,6 +204,18 @@ export function ChatUI({
                 className="min-h-[80px] resize-none"
                 ref={questionRef}
               />
+              <Button 
+              variant={'secondary'}
+              onClick={() => {
+                toast({
+                  title: "Scheduled: Catch up",
+                  description: "Friday, February 10, 2023 at 5:57 PM",
+                })
+              }}
+            
+              >
+                Toast
+                </Button>
             </div>
           </div>
         </ResizablePanel>

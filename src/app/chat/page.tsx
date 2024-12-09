@@ -8,6 +8,7 @@ import { nanoid } from "nanoid";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast"
 
 interface TranscriptEntry {
   offset: string;
@@ -25,7 +26,9 @@ function isValidYoutubeUrl(url: string): boolean {
   return youtubeRegex.test(url);
 }
 
+
 export default function Page() {
+  const {toast} = useToast()
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
@@ -61,25 +64,32 @@ export default function Page() {
       setResourceUrl(youtubeUrl);
 
       setProgress(30);
-      const transcriptResponse = await fetch(
-        `http://localhost:8787/youtube/transcript?videoId=${youtubeId}`
-      );
-      const data = (await transcriptResponse.json()) as TranscriptResponse;
-      
-      setTranscript(data.transcript);
-      setSummary(data.summary);
-
-      setProgress(50);
-      const CHUNK_SIZE = 50;
       const chunks = [];
+      const CHUNK_SIZE = 50;
 
-      for (let i = 0; i < data?.transcript.length; i += CHUNK_SIZE) {
-        const mergedText = data?.transcript
-          .slice(i, i + CHUNK_SIZE)
-          .map((entry) => entry.text)
-          .join(" ");
-        chunks.push(mergedText);
+      try {
+        const transcriptResponse = await fetch(
+          `http://localhost:8787/youtube/transcript?videoId=${youtubeId}`
+        );
+        const data = (await transcriptResponse.json()) as TranscriptResponse;
+        
+        setTranscript(data.transcript);
+        setSummary(data.summary);
+
+        setProgress(50);
+
+        for (let i = 0; i < data?.transcript.length; i += CHUNK_SIZE) {
+          const mergedText = data?.transcript
+            .slice(i, i + CHUNK_SIZE)
+            .map((entry) => entry.text)
+            .join(" ");
+          chunks.push(mergedText);
+        }
+      } catch (error) {
+        toast({variant: 'destructive', title: "Uh oh! Something went wrong.",
+          description: "There was a problem fetching video",})
       }
+      
       try {
         setProgress(70);
         const vectorUploadResponse = await fetch(

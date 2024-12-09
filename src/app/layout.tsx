@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { Toaster } from "@/components/ui/toaster"
+
 // import { Inter, Geist } from "next/font/google";
 import { GeistSans } from "geist/font/sans";
 import "./globals.css";
@@ -16,7 +18,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={GeistSans.className}>{children}</body>
+      <body className={GeistSans.className}>
+        <main>
+          {children}
+          <Toaster />
+          </main>
+          
+        </body>
     </html>
   );
 }
