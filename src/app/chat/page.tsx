@@ -87,7 +87,10 @@ export default function Page() {
         }
       } catch (error) {
         toast({variant: 'destructive', title: "Uh oh! Something went wrong.",
-          description: "There was a problem fetching video",})
+          description: "There was a problem fetching video",
+        action: <Button className="border" onClick={handleSubmit} variant={"destructive"}>Try Again</Button>
+        })
+          return
       }
       
       try {
@@ -106,7 +109,11 @@ export default function Page() {
         const result = await vectorUploadResponse.json();
         console.log(result);
       } catch (error) {
-        console.error("Error uploading vectors:", error);
+        toast({variant: 'destructive', title: "Uh oh! Something went wrong.",
+          description: "There was a problem with vector db",
+        action: <Button className="border" onClick={handleSubmit} variant={"destructive"}>Try Again</Button>
+        })
+          return
       }
 
       setProgress(90);

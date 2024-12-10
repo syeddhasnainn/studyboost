@@ -204,18 +204,6 @@ export function ChatUI({
                 className="min-h-[80px] resize-none"
                 ref={questionRef}
               />
-              <Button 
-              variant={'secondary'}
-              onClick={() => {
-                toast({
-                  title: "Scheduled: Catch up",
-                  description: "Friday, February 10, 2023 at 5:57 PM",
-                })
-              }}
-            
-              >
-                Toast
-                </Button>
             </div>
           </div>
         </ResizablePanel>
