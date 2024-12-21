@@ -16,7 +16,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Textarea } from "@/components/ui/textarea";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { VideoTranscript } from "@/components/VideoTranscript";
 import { useStore } from "@/hooks/use-store";
 import * as ResizablePrimitive from "react-resizable-panels";
@@ -48,7 +48,9 @@ export function ChatUI({
     setChatMessages(messages);
   }, [messages]);
 
-  const { addMessage, chatId, setMessages } = useStore();
+  const { addMessage, chatId, setChatId, setMessages } = useStore();
+
+
   const [isLoading, setIsLoading] = useState(false);
   const questionRef = useRef<HTMLTextAreaElement>(null);
 
@@ -136,7 +138,7 @@ export function ChatUI({
               </div>
 
               <div className="flex-1 min-h-0 overflow-y-auto">
-                <VideoTranscript />
+                <VideoTranscript chat_id={chatInfo.chat.chat_id}/>
               </div>
             </div>
           )}

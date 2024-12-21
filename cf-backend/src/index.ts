@@ -65,9 +65,6 @@ async function* makeIterator(messages: any) {
 
 app.post("/chat", async (c) => {
   const { message, resourceId, chatId } = await c.req.json();
-  console.log("resource id received", resourceId);
-  console.log("chat id received", chatId);
-  console.log("message received", message);
 
   const existingMessages = await c.env.DB.prepare(
     `
@@ -79,8 +76,6 @@ app.post("/chat", async (c) => {
   )
     .bind(chatId)
     .all();
-
-  console.log("existingMessages", existingMessages);
 
   if (message.role === "user") {
     await c.env.DB.prepare(
@@ -96,21 +91,15 @@ app.post("/chat", async (c) => {
   });
 
   const embeddings = embeddingResponse.data[0];
-  console.log("embeddings", embeddings);
   const queryEmbeddings = await c.env.VECTORIZE.query(embeddings, {
     filter: { resourceId: resourceId },
     topK: 5,
     returnMetadata: "all",
   });
-  console.log("embeddings with filter", embeddings);
-
-  console.log("queryEmbeddings", queryEmbeddings);
 
   const context = queryEmbeddings.matches
     .map((m) => m.metadata?.text)
     .join(" ");
-
-  console.log("context", context);
 
   const messagesForAI = [
     {
@@ -181,7 +170,6 @@ app.post("/vectors", async (c) => {
       data: { inserted },
     });
   } catch (error) {
-    console.error("Vector insertion error:", error);
     return c.json(
       {
         success: false,
@@ -253,11 +241,61 @@ app.get("/db/getMessages", async (c) => {
   }
 });
 
+app.post("/db/saveSummary", async (c) => {
+  console.log('inside save summaries')
+  try {
+    const { chat_id, summary } = await c.req.json();
+    // for (const sum of summary) {
+    //   const su = await c.env.DB.prepare(`INSERT INTO chapter_summaries (chat_id, title, content, timestmp) VALUES (?, ?, ?, ?);
+    //     `).bind(chat_id, sum.title, sum.content, sum.timestamp).run()
+    // }
+
+    const stmt = c.env.DB.prepare(`INSERT INTO chapter_summaries (chat_id, title, content, timestmp) VALUES (?, ?, ?, ?);`)
+    const batchSummary = summary.map((s) =>
+      stmt.bind(chat_id, s.title, s.content, s.timestamp)
+    );
+    console.log(batchSummary)
+    const batchResults = await c.env.DB.batch(
+      batchSummary
+    )
+
+    return c.json({ msg: "Saved Chapter Summaries to the DB" });
+  } catch {
+    return c.json({ error: "Failed to store summary" }, 400);
+  }
+});
+
+app.get("/db/getSummary", async (c) => {
+  try {
+    const chatId = c.req.query("chatId");
+
+    if (!chatId) {
+      return c.json({ error: "Chat ID is required" }, 400);
+    }
+
+    const { results } = await c.env.DB.prepare(
+      `
+      SELECT * from chapter_summaries WHERE CHAT_ID = ?;
+    `
+    )
+      .bind(chatId)
+      .all();
+
+    return c.json({ summary: results });
+  } catch (error) {
+    return c.json({ error: "Failed to fetch messages" }, 500);
+  }
+});
+
 app.get("/db/getChats", async (c) => {
   const { results } = await c.env.DB.prepare("SELECT * FROM chats").all();
   return c.json({ results });
 });
 
+// app.get("/db/summaries", async (c)=> {
+//   const {summary} = await c.env.DB.prepare("SELECT * FROM chapter_summaries").all()
+//   return c.json({summary})
+// })
 // YouTube transcript route
 app.get("/youtube/transcript", async (c) => {
   const videoId = c.req.query("videoId");
@@ -275,16 +313,13 @@ app.get("/youtube/transcript", async (c) => {
       .map((entry) => `${entry.text} - ${entry.offset}`)
       .join(" | ");
 
-    console.log("textForSummary", textForSummary);
-
     const summarySchema = z.array(
       z.object({
         title: z.string().describe("title of the chapter"),
-        summary: z.string().describe("summary of the chapter"),
+        content: z.string().describe("summary of the chapter"),
         timestamp: z.number().describe("timestamp of the chapter"),
       })
     );
-
 
     const jsonSchema = zodToJsonSchema(summarySchema, "summarySchema");
 
@@ -309,10 +344,9 @@ app.get("/youtube/transcript", async (c) => {
       const summary = JSON.parse(
         processedSummary?.choices?.[0]?.message?.content
       );
-      console.log(summary);
+
       return c.json({ summary, transcript });
     }
-
   } catch (error) {
     return c.json({ error: "Failed to fetch transcript" }, 500);
   }
@@ -334,7 +368,7 @@ app.post("/upload", async (c) => {
       },
     });
 
-    const objectUrl = `https://pub-89064af8ffde4fb9b9df3498ccd7b80a.r2.dev/${file.name}`;
+    const objectUrl = `https://pub-f9d9a09c81a24361aa5d514cdcbb72b2.r2.dev/${file.name}`;
 
     return c.json({
       success: true,
