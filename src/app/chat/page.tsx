@@ -32,13 +32,14 @@ export default function Page() {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
-  const { setResourceId, setChatId, setTranscript, resourceUrl, setSummary } = useStore();
+  const { setResourceId, setChatId, setTranscript, resourceUrl, setSummary, summary } = useStore();
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     const youtubeUrl = inputRef.current?.value.trim();
 
     setError(null);
@@ -58,11 +59,24 @@ export default function Page() {
       setProgress(10);
 
       const youtubeId = youtubeUrl.split("v=")[1];
+      console.log('yid',youtubeId)
+      const chats = await fetch("http://localhost:8787/db/getChats")
+      const {results} = await chats.json()
+      console.log(results)
+      const filteredChats = results.filter(c=>c.resource_id===youtubeId)
       const chatId = nanoid(10);
+
       setResourceId(youtubeId);
       setChatId(chatId);
       setResourceUrl(youtubeUrl);
+      console.log(filteredChats)
 
+      if (filteredChats[0]) {
+        router.push(`/chat/${chatId}`);
+        return
+      }
+
+      
       setProgress(30);
       const chunks = [];
       const CHUNK_SIZE = 50;
@@ -71,7 +85,7 @@ export default function Page() {
         const transcriptResponse = await fetch(
           `http://localhost:8787/youtube/transcript?videoId=${youtubeId}`
         );
-        const data = (await transcriptResponse.json()) as TranscriptResponse;
+        var data = (await transcriptResponse.json()) as TranscriptResponse;
         
         setTranscript(data.transcript);
         setSummary(data.summary);
@@ -85,6 +99,10 @@ export default function Page() {
             .join(" ");
           chunks.push(mergedText);
         }
+
+
+        
+
       } catch (error) {
         toast({variant: 'destructive', title: "Uh oh! Something went wrong.",
           description: "There was a problem fetching video",
@@ -118,7 +136,7 @@ export default function Page() {
 
       setProgress(90);
 
-      const db = await fetch("http://localhost:8787/db", {
+      const db = await fetch("http://localhost:8787/saveChat", {
         method: "POST",
         body: JSON.stringify({
           resourceId: youtubeId,
@@ -126,6 +144,15 @@ export default function Page() {
           resourceUrl: inputRef.current?.value,
         }),
       });
+
+      const saveSummary = await fetch("http://localhost:8787/db/saveSummary", {
+        method: "POST",
+        body: JSON.stringify({
+          chat_id: chatId,
+          summary: data.summary
+        })
+      })
+      
 
       setProgress(100);
       router.push(`/chat/${chatId}`);
@@ -147,7 +174,7 @@ export default function Page() {
       console.log("formdata", formData.get("file"));
 
       try {
-        const response = await fetch("http://localhost:8787/upload", {
+        const response = await fetch("http://localhost:8787/uploadFile", {
           method: "POST",
           body: formData,
         });
@@ -160,7 +187,7 @@ export default function Page() {
         setResourceId(id);
         setChatId(id);
 
-        const db = await fetch("http://localhost:8787/db", {
+        const db = await fetch("http://localhost:8787/saveChat", {
           method: "POST",
           body: JSON.stringify({
             resourceId: id,

@@ -271,7 +271,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const chats = results.map((chat : any) => ({
       name: chat.chat_id,
       url: "#",
-    })).slice(0, 5);
+    })).slice(0, 10);
     setTest(chats);
   }
 

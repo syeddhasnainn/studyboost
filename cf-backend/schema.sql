@@ -20,6 +20,20 @@ CREATE TABLE IF NOT EXISTS chat_messages (
   FOREIGN KEY (chat_id) REFERENCES chats(chat_id)
 );
 
+
+-- Create chapter_summaries table
+CREATE TABLE IF NOT EXISTS chapter_summaries (
+  chapter_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  chat_id TEXT NOT NULL,
+  title TEXT NOT NULL,
+  content TEXT NOT NULL,
+  timestmp INTEGER NOT NULL,
+  FOREIGN KEY (chat_id) REFERENCES chats(chat_id)
+);
+
+-- Optional: Create indexes for better query performance
+CREATE INDEX IF NOT EXISTS idx_chapter_summaries_chat_id ON chapter_summaries(chat_id);
+
 -- Optional: Create indexes for better query performance
 CREATE INDEX IF NOT EXISTS idx_chat_messages_chat_id ON chat_messages(chat_id);
 CREATE INDEX IF NOT EXISTS idx_chats_resource_id ON chats(resource_id);

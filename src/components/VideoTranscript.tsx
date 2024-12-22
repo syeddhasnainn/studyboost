@@ -2,13 +2,13 @@ import { useStore } from "@/hooks/use-store";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
 import React from "react";
+import { LoadingSpinner } from "./ui/loading-spinner";
 interface ChapterSummary {
   title: string;
   timestamp: string;
   summary: string;
 }
 
-// Helper function to format seconds to HH:MM:SS
 function formatTime(seconds: string): string {
   const sec = parseInt(seconds);
   const hours = Math.floor(sec / 3600);
@@ -25,7 +25,7 @@ function formatTime(seconds: string): string {
   return parts.join(":");
 }
 
-export function VideoTranscript({chat_id}:any) {
+export function VideoTranscript({ chat_id }: any) {
   const { transcript, summary, setSummary } = useStore();
 
   const handleTimestampClick = (timestamp: string) => {
@@ -52,7 +52,7 @@ export function VideoTranscript({chat_id}:any) {
       setSummary(summary);
     };
 
-    if(summary.length == 0) getSummaries()
+    if (summary.length == 0) getSummaries()
 
   }, []);
 
@@ -60,7 +60,7 @@ export function VideoTranscript({chat_id}:any) {
     <div className="flex flex-col gap-6 p-4">
       <div>
         {/* <h3 className="text-lg font-semibold mb-4">Chapter Summaries</h3> */}
-        {summary.length>0 ? (
+        {summary.length > 0 ? (
           <div className="space-y-4">
             {summary.map((chapter, index) => (
               <Card
@@ -81,7 +81,10 @@ export function VideoTranscript({chat_id}:any) {
             ))}
           </div>
         ) : (
-          <div className="text-center">loading...</div>
+          <div className="flex items-center justify-center">
+            <LoadingSpinner />
+
+          </div>
         )}
       </div>
     </div>

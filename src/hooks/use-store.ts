@@ -11,6 +11,7 @@ interface TranscriptEntry {
   text: string;
 }
 
+
 interface StoreState {
   messages: Array<Message>;
   addMessage: (message: Message) => void;

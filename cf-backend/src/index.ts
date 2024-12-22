@@ -182,7 +182,7 @@ app.post("/vectors", async (c) => {
 });
 
 // Database routes
-app.post("/db", async (c) => {
+app.post("/saveChat", async (c) => {
   const { resourceId, chatId, resourceUrl } = await c.req.json();
 
   const upload = await c.env.DB.prepare(
@@ -245,13 +245,9 @@ app.post("/db/saveSummary", async (c) => {
   console.log('inside save summaries')
   try {
     const { chat_id, summary } = await c.req.json();
-    // for (const sum of summary) {
-    //   const su = await c.env.DB.prepare(`INSERT INTO chapter_summaries (chat_id, title, content, timestmp) VALUES (?, ?, ?, ?);
-    //     `).bind(chat_id, sum.title, sum.content, sum.timestamp).run()
-    // }
 
     const stmt = c.env.DB.prepare(`INSERT INTO chapter_summaries (chat_id, title, content, timestmp) VALUES (?, ?, ?, ?);`)
-    const batchSummary = summary.map((s) =>
+    const batchSummary = summary.map((s:any) =>
       stmt.bind(chat_id, s.title, s.content, s.timestamp)
     );
     console.log(batchSummary)
@@ -353,7 +349,7 @@ app.get("/youtube/transcript", async (c) => {
 });
 
 // File upload route
-app.post("/upload", async (c) => {
+app.post("/uploadFile", async (c) => {
   try {
     const formData = await c.req.formData();
     const file = formData.get("file") as File;
