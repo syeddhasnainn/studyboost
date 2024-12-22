@@ -20,27 +20,27 @@ async function getMessages(chatId: string) {
 
 async function getChatInfo(chatId: string) {
   const response = await fetch(
-    `http://localhost:8787/db/check?chatId=${chatId}`,
+    `http://localhost:8787/db/getChat?chatId=${chatId}`,
     {
       cache: 'no-store'
     }
   );
-  const data = await response.json();
+  const data = await response.json() as any;
   return data.chat;
 }
 
 export default async function ChatPage({ params }: PageProps) {
   const chatId = params.id;
-  
+
   const [messages, chatInfo] = await Promise.all([
     getMessages(chatId),
     getChatInfo(chatId)
   ]);
 
   return (
-    <ChatUI 
-      chatInfo={{ chat: chatInfo }} 
-      messages={messages} 
+    <ChatUI
+      chatInfo={{ chat: chatInfo }}
+      messages={messages}
     />
   );
 }

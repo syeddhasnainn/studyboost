@@ -194,7 +194,7 @@ app.post("/saveChat", async (c) => {
   return c.json({ message: "success" });
 });
 
-app.get("/db/check", async (c) => {
+app.get("/db/getChat", async (c) => {
   try {
     const chatId = c.req.query("chatId");
 
@@ -283,7 +283,7 @@ app.get("/db/getSummary", async (c) => {
   }
 });
 
-app.get("/db/getChats", async (c) => {
+app.get("/db/getAllChats", async (c) => {
   const { results } = await c.env.DB.prepare("SELECT * FROM chats").all();
   return c.json({ results });
 });

@@ -60,7 +60,7 @@ export default function Page() {
 
       const youtubeId = youtubeUrl.split("v=")[1];
       console.log('yid',youtubeId)
-      const chats = await fetch("http://localhost:8787/db/getChats")
+      const chats = await fetch("http://localhost:8787/db/getAllChats")
       const {results} = await chats.json()
       console.log(results)
       const filteredChats = results.filter(c=>c.resource_id===youtubeId)
