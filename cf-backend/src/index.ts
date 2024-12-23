@@ -284,7 +284,7 @@ app.get("/db/getSummary", async (c) => {
 });
 
 app.get("/db/getAllChats", async (c) => {
-  const { results } = await c.env.DB.prepare("SELECT * FROM chats").all();
+  const { results } = await c.env.DB.prepare("SELECT * FROM chats ORDER BY created_at DESC;").all();
   return c.json({ results });
 });
 
@@ -386,14 +386,14 @@ app.post("/uploadFile", async (c) => {
 
 app.post("getUser", async (c) => {
   const { user_id } = await c.req.json();
-  const results = await c.env.DB.prepare("SELECT * FROM users WHERE user_id = ?").bind(user_id).first();
-  return c.json({ results });
+  const userData = await c.env.DB.prepare("SELECT * FROM users WHERE user_id = ?").bind(user_id).first();
+  return c.json({ userData });
 });
 
 
 app.post("/addUser", async(c) => {
-  const { user_id } = await c.req.json();
-  await c.env.DB.prepare("INSERT INTO users (user_id) VALUES (?)").bind(user_id).run();
+  const { user_id, first_name, last_name, avatar, email } = await c.req.json();
+  await c.env.DB.prepare("INSERT INTO users (user_id, first_name, last_name, avatar, email) VALUES (?, ?, ?, ?, ?)").bind(user_id, first_name, last_name, avatar, email).run();
   return c.json({ success: "user added" });
 })
 

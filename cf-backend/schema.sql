@@ -1,52 +1,40 @@
--- Drop existing tables if they exist
 DROP TABLE IF EXISTS chat_messages;
 DROP TABLE IF EXISTS chats;
 
--- Create chats table
 CREATE TABLE IF NOT EXISTS chats (
   chat_id TEXT PRIMARY KEY,
   resource_id TEXT NOT NULL,
   resource_link TEXT NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  user_id TEXT NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
--- Create chat_messages table
 CREATE TABLE IF NOT EXISTS chat_messages (
   message_id INTEGER PRIMARY KEY AUTOINCREMENT,
   chat_id TEXT NOT NULL,
   role TEXT NOT NULL CHECK (role IN ('user', 'assistant')),
   content TEXT NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (chat_id) REFERENCES chats(chat_id)
+  FOREIGN KEY (chat_id) REFERENCES chats(chat_id) ON DELETE CASCADE
 );
 
-
--- Create chapter_summaries table
 CREATE TABLE IF NOT EXISTS chapter_summaries (
   chapter_id INTEGER PRIMARY KEY AUTOINCREMENT,
   chat_id TEXT NOT NULL,
   title TEXT NOT NULL,
   content TEXT NOT NULL,
   timestmp INTEGER NOT NULL,
-  FOREIGN KEY (chat_id) REFERENCES chats(chat_id)
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (chat_id) REFERENCES chats(chat_id) ON DELETE CASCADE
 );
 
--- Optional: Create indexes for better query performance
-CREATE INDEX IF NOT EXISTS idx_chapter_summaries_chat_id ON chapter_summaries(chat_id);
-
--- Optional: Create indexes for better query performance
-CREATE INDEX IF NOT EXISTS idx_chat_messages_chat_id ON chat_messages(chat_id);
-CREATE INDEX IF NOT EXISTS idx_chats_resource_id ON chats(resource_id);
-
--- Optional: Insert sample data
-INSERT INTO chats (chat_id, resource_id, resource_link) 
-VALUES 
-  ('1', '1', 'https://pub-edfa8c3b293847d6ac8759c6e413b591.r2.dev/Muhammad%20Wajih''s%20Resume.pdf'),
-  ('2', '2', 'https://pub-edfa8c3b293847d6ac8759c6e413b591.r2.dev/Muhammad%20Wajih''s%20Resume.pdf'),
-  ('3', '3', 'https://pub-edfa8c3b293847d6ac8759c6e413b591.r2.dev/Muhammad%20Wajih''s%20Resume.pdf');
-
-INSERT INTO chat_messages (chat_id, role, content)
-VALUES
-  ('1', 'user', 'What are some fun things to do in New York?'),
-  ('1', 'assistant', 'You could go to the Empire State Building!'),
-  ('1', 'user', 'That sounds fun! Where is it?');
+CREATE TABLE IF NOT EXISTS users (
+  user_id TEXT NOT NULL,
+  first_name TEXT NOT NULL,
+  last_name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  avatar TEXT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (user_id)
+);

@@ -27,20 +27,16 @@ import {
 } from "@/components/ui/sidebar"
 export function NavFavorites({
   favorites,
-}: {
-  favorites: {
-    name: string
-    url: string
-
-  }[]
-}) {
+}: any) {
   const { isMobile } = useSidebar()
+
+  
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Recent</SidebarGroupLabel>
       <SidebarMenu>
-        {favorites.map((item) => (
+        {favorites.map((item:any) => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton asChild>
               <Link href={`/chat/${item.url}`} title={item.name}>

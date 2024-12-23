@@ -263,7 +263,7 @@ const test = [
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
-  const [chats, setChats] = React.useState([]);
+  const [test, setTest] = React.useState([]);
 
   const fetchChats = async () => {
     const response = await fetch("http://localhost:8787/db/getAllChats");
@@ -272,7 +272,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       name: chat.chat_id,
       url: chat.chat_id,
     }))
-    setChats(chats);
+    setTest(chats);
   }
 
   React.useEffect(() => {
@@ -286,7 +286,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={data.navMain} />
       </SidebarHeader>
       <SidebarContent>
-        <NavFavorites favorites={chats} />
+        <NavFavorites favorites={test} />
         {/* <NavWorkspaces workspaces={data.workspaces} /> */}
       </SidebarContent>
       <NavUser user={user} />

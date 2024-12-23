@@ -14,7 +14,7 @@ index_name = "studyninja-test"
 [[d1_databases]]
 binding = "DB"
 database_name = "studymore-test"
-database_id = "54a3014a-19d9-4bba-b36d-5125cd4cb13b"
+database_id = "2ea09955-74a8-4ed7-9f93-79318792bf5a"
 
 [[r2_buckets]]
 binding = "MY_BUCKET"
