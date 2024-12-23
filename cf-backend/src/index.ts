@@ -183,12 +183,12 @@ app.post("/vectors", async (c) => {
 
 // Database routes
 app.post("/saveChat", async (c) => {
-  const { resourceId, chatId, resourceUrl } = await c.req.json();
+  const { resourceId, chatId, resourceUrl, userId } = await c.req.json();
 
   const upload = await c.env.DB.prepare(
-    "INSERT INTO chats (resource_id, chat_id, resource_link) VALUES (?, ?, ?)"
+    "INSERT INTO chats (resource_id, chat_id, resource_link, user_id) VALUES (?, ?, ?, ?)"
   )
-    .bind(resourceId, chatId, resourceUrl)
+    .bind(resourceId, chatId, resourceUrl, userId)
     .run();
 
   return c.json({ message: "success" });

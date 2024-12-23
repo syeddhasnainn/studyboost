@@ -126,6 +126,7 @@ export function ChatForm({userId}: {userId: string}) {
           resourceId: youtubeId,
           chatId,
           resourceUrl: inputRef.current?.value,
+          userId: userId
         }),
       });
 
