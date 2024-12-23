@@ -1,5 +1,5 @@
 import { ChatUI } from "@/components/chat/ChatUI";
-
+import { withAuth } from '@workos-inc/authkit-nextjs';
 interface PageProps {
   params: {
     id: string;
@@ -31,6 +31,7 @@ async function getChatInfo(chatId: string) {
 
 export default async function ChatPage({ params }: PageProps) {
   const chatId = params.id;
+  const user = await withAuth({ensureSignedIn: true});
 
   const [messages, chatInfo] = await Promise.all([
     getMessages(chatId),

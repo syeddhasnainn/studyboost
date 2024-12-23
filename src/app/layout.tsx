@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Toaster } from "@/components/ui/toaster"
+import { AuthKitProvider } from '@workos-inc/authkit-nextjs';
 
 // import { Inter, Geist } from "next/font/google";
 import { GeistSans } from "geist/font/sans";
@@ -20,7 +21,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={GeistSans.className}>
         <main>
-          {children}
+        <AuthKitProvider>{children}</AuthKitProvider>
           <Toaster />
           </main>
           

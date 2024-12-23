@@ -381,4 +381,20 @@ app.post("/uploadFile", async (c) => {
   }
 });
 
+
+//USERS
+
+app.post("getUser", async (c) => {
+  const { user_id } = await c.req.json();
+  const results = await c.env.DB.prepare("SELECT * FROM users WHERE user_id = ?").bind(user_id).first();
+  return c.json({ results });
+});
+
+
+app.post("/addUser", async(c) => {
+  const { user_id } = await c.req.json();
+  await c.env.DB.prepare("INSERT INTO users (user_id) VALUES (?)").bind(user_id).run();
+  return c.json({ success: "user added" });
+})
+
 export default app;

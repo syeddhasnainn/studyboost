@@ -66,9 +66,9 @@ export default function Page() {
           <span className="text-base font-medium">StudyBoost</span>
         </div>
 
-        <Button className="text-sm rounded-2xl text-white bg-blue-600 hover:bg-blue-700 shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 font-medium px-6 py-2">
+        <Link href="/login" className="text-sm rounded-2xl text-white bg-blue-600 hover:bg-blue-700 shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 font-medium px-6 py-2">
           Log in
-        </Button>
+        </Link>
       </nav>
 
       <section className="container max-w-6xl mx-auto px-4 pt-40 pb-24 text-center">

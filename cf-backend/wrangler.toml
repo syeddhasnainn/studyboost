@@ -18,7 +18,7 @@ database_id = "54a3014a-19d9-4bba-b36d-5125cd4cb13b"
 
 [[r2_buckets]]
 binding = "MY_BUCKET"
-bucket_name = "studymore-dev"
+bucket_name = "studyboost-prod"
 preview_bucket_name = "studymore-test"
 
 
