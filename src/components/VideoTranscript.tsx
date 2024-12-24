@@ -3,11 +3,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
 import React from "react";
 import { LoadingSpinner } from "./ui/loading-spinner";
-interface ChapterSummary {
-  title: string;
-  timestamp: string;
-  summary: string;
-}
+import useSWR from "swr";
+import { fetcher } from "@/lib/utils";
 
 function formatTime(seconds: string): string {
   const sec = parseInt(seconds);
@@ -26,12 +23,11 @@ function formatTime(seconds: string): string {
 }
 
 export function VideoTranscript({ chat_id }: any) {
-  const { transcript, summary, setSummary } = useStore();
+  const { transcript, setSummary } = useStore();
 
   const handleTimestampClick = (timestamp: string) => {
     const iframe = document.querySelector("iframe");
     if (iframe && iframe.contentWindow) {
-      // Use YouTube Player API to seek to the timestamp
       iframe.contentWindow.postMessage(
         JSON.stringify({
           event: "command",
@@ -43,26 +39,20 @@ export function VideoTranscript({ chat_id }: any) {
     }
   };
 
-  React.useEffect(() => {
-    const getSummaries = async () => {
-      const resp = await fetch(`http://localhost:8787/db/getSummary?chatId=${chat_id}`);
-      const { summary } = await resp.json();
+  const { data, isLoading } = useSWR(
+    `${process.env.NEXT_PUBLIC_API_URL}/db/getSummary?chatId=${chat_id}`,
+    fetcher, {fallbackData: []}
+  ) as any;
 
-      console.log(summary);
-      setSummary(summary);
-    };
-
-    if (summary.length == 0) getSummaries()
-
-  }, []);
 
   return (
     <div className="flex flex-col gap-6 p-4">
       <div>
-        {/* <h3 className="text-lg font-semibold mb-4">Chapter Summaries</h3> */}
-        {summary.length > 0 ? (
-          <div className="space-y-4">
-            {summary.map((chapter, index) => (
+        {isLoading ? <div className="flex items-center justify-center">
+            <LoadingSpinner />
+
+          </div>: <div className="space-y-4">
+            {data.summary.map((chapter: any, index: number) : any => (
               <Card
                 key={index}
                 className="p-4 hover:bg-gray-100 hover:cursor-pointer"
@@ -79,13 +69,7 @@ export function VideoTranscript({ chat_id }: any) {
                 </p>
               </Card>
             ))}
-          </div>
-        ) : (
-          <div className="flex items-center justify-center">
-            <LoadingSpinner />
-
-          </div>
-        )}
+          </div> }
       </div>
     </div>
   );

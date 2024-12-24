@@ -266,7 +266,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [test, setTest] = React.useState([]);
 
   const fetchChats = async () => {
-    const response = await fetch("http://localhost:8787/db/getAllChats");
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/db/getAllChats`);
     const {results} = await response.json() as any
     const chats = results.map((chat : any) => ({
       name: chat.chat_id,

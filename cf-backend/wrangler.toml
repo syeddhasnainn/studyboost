@@ -3,46 +3,46 @@ main = "src/index.ts"
 compatibility_date = "2024-11-06"
 
 
+
+[placement]
+mode = "smart"
+
 [ai]
 binding = "AI"
 
-[[vectorize]]
+[env.production]
+name = "cf-backend-prod"
+
+routes = [
+  { pattern = "api.studyboost.org", custom_domain = true }
+]
+
+[[env.production.vectorize]]
+binding = "VECTORIZE"
+index_name = "studyboost-prod"
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "studyboost-db-prod"
+database_id = "d2cb7781-1012-42e8-a2ac-c944de4c9617"
+
+[[env.production.r2_buckets]]
+binding = "MY_BUCKET"
+bucket_name = "studyboost-prod"
+
+[env.dev]
+name = "cf-backend-dev"
+
+[[env.dev.vectorize]]
 binding = "VECTORIZE"
 index_name = "studyninja-test"
 
-
-[[d1_databases]]
+[[env.dev.d1_databases]]
 binding = "DB"
 database_name = "studymore-test"
 database_id = "2ea09955-74a8-4ed7-9f93-79318792bf5a"
 
-[[r2_buckets]]
+[[env.dev.r2_buckets]]
 binding = "MY_BUCKET"
-bucket_name = "studyboost-prod"
+bucket_name = "studyboost-dev"
 preview_bucket_name = "studymore-test"
-
-
-# compatibility_flags = [ "nodejs_compat" ]
-
-# [vars]
-# MY_VAR = "my-variable"
-
-# [[kv_namespaces]]
-# binding = "MY_KV_NAMESPACE"
-# id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-
-# [[r2_buckets]]
-# binding = "MY_BUCKET"
-# bucket_name = "my-bucket"
-
-# [[d1_databases]]
-# binding = "DB"
-# database_name = "my-database"
-# database_id = ""
-
-# [ai]
-# binding = "AI"
-
-# [observability]
-# enabled = true
-# head_sampling_rate = 1

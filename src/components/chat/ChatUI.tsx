@@ -68,7 +68,7 @@ export function ChatUI({
           questionRef.current.value = "";
         }
 
-        const resp = await fetch(`http://localhost:8787/chat`, {
+        const resp = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat`, {
           method: "POST",
           body: JSON.stringify({
             message: newMessage,
@@ -104,7 +104,7 @@ export function ChatUI({
           }
         }
 
-        await fetch(`http://localhost:8787/chat`, {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat`, {
           method: "PUT",
           body: JSON.stringify({
             chatId: chatInfo.chat.chat_id,
@@ -121,7 +121,7 @@ export function ChatUI({
   return (
     <div className="flex flex-1 p-4 my-14 pt-0 ">
       <ResizablePrimitive.PanelGroup direction="horizontal" className="gap-4">
-        <ResizablePanel defaultSize={60} minSize={50}>
+        <ResizablePanel defaultSize={40} minSize={20}>
           {!resourceUrl?.includes("youtube") ? (
             <div className="h-[calc(100vh-6rem)] rounded-lg flex flex-col gap-4">
               {resourceUrl && <PDFViewer url={resourceUrl} />}
@@ -146,7 +146,7 @@ export function ChatUI({
 
         <ResizableHandle withHandle />
 
-        <ResizablePanel defaultSize={40} minSize={30}>
+        <ResizablePanel defaultSize={60} minSize={30}>
           <div className="h-[calc(100vh-6rem)] flex flex-col">
             <div className="flex gap-4 mb-4">
               {/* <Button variant="secondary">Chat</Button>

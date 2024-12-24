@@ -1,5 +1,7 @@
 import { ChatUI } from "@/components/chat/ChatUI";
+import { IMessage } from "@/types/api";
 import { withAuth } from '@workos-inc/authkit-nextjs';
+
 interface PageProps {
   params: {
     id: string;
@@ -7,23 +9,16 @@ interface PageProps {
 }
 
 async function getMessages(chatId: string) {
-  console.log("chat id from the id page", chatId)
   const response = await fetch(
-    `http://localhost:8787/db/getMessages?chatId=${chatId}`,
-    {
-      cache: 'no-store' // Disable caching to always get fresh messages
-    }
+    `${process.env.NEXT_PUBLIC_API_URL}/db/getMessages?chatId=${chatId}`,
   );
-  const data = await response.json();
+  const data = await response.json() as {messages: IMessage[]};
   return data.messages;
 }
 
 async function getChatInfo(chatId: string) {
   const response = await fetch(
-    `http://localhost:8787/db/getChat?chatId=${chatId}`,
-    {
-      cache: 'no-store'
-    }
+    `${process.env.NEXT_PUBLIC_API_URL}/db/getChat?chatId=${chatId}`,
   );
   const data = await response.json() as any;
   return data.chat;

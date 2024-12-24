@@ -6,8 +6,7 @@ import {
 
 export default async function Page() {
   const { user } = await withAuth({ ensureSignedIn: true });
-  console.log("user", user);
-  const fetchUser = await fetch("http://localhost:8787/getUser", {
+  const fetchUser = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/getUser`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -18,7 +17,7 @@ export default async function Page() {
   const { userData } = await fetchUser.json() as any;
   if (!userData) {
     try {
-      await fetch("http://localhost:8787/addUser", {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/addUser`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -31,8 +30,8 @@ export default async function Page() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <main className="flex-1">
+    <div className="flex flex-col min-h-screen items-center justify-center w-full"> 
+      <main className="w-full">
         <ChatForm userId={user.id}/>
       </main>
     </div>

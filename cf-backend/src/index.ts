@@ -29,7 +29,12 @@ app.use("*", async (c, next) => {
 app.use(
   "*",
   cors({
-    origin: ["http://localhost:3000"],
+    origin: [
+      "*",
+      "http://localhost:3000",
+      "https://studyboost.org",
+      "https://www.studyboost.org",
+    ],
     credentials: true,
   })
 );
@@ -62,6 +67,10 @@ async function* makeIterator(messages: any) {
     }
   }
 }
+
+app.get("/", async (c) => {
+  return c.json({ message: "how did you get here?"});
+});
 
 app.post("/chat", async (c) => {
   const { message, resourceId, chatId } = await c.req.json();
@@ -242,7 +251,6 @@ app.get("/db/getMessages", async (c) => {
 });
 
 app.post("/db/saveSummary", async (c) => {
-  console.log('inside save summaries')
   try {
     const { chat_id, summary } = await c.req.json();
 
@@ -250,7 +258,6 @@ app.post("/db/saveSummary", async (c) => {
     const batchSummary = summary.map((s:any) =>
       stmt.bind(chat_id, s.title, s.content, s.timestamp)
     );
-    console.log(batchSummary)
     const batchResults = await c.env.DB.batch(
       batchSummary
     )
@@ -288,11 +295,6 @@ app.get("/db/getAllChats", async (c) => {
   return c.json({ results });
 });
 
-// app.get("/db/summaries", async (c)=> {
-//   const {summary} = await c.env.DB.prepare("SELECT * FROM chapter_summaries").all()
-//   return c.json({summary})
-// })
-// YouTube transcript route
 app.get("/youtube/transcript", async (c) => {
   const videoId = c.req.query("videoId");
 
@@ -369,7 +371,6 @@ app.post("/uploadFile", async (c) => {
     return c.json({
       success: true,
       objectUrl,
-      upload,
       fileInfo: {
         name: file.name,
         size: file.size,
