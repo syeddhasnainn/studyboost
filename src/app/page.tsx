@@ -4,6 +4,12 @@ import { Icons } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 // import { Badge } from "@/components/ui/badge";
 import { VerifiedIcon } from "lucide-react";
+import {
+  getSignInUrl,
+  getSignUpUrl,
+  signOut
+
+} from '@workos-inc/authkit-nextjs';
 
 interface Testimonial {
   name: string;
@@ -55,7 +61,10 @@ const testimonials: Testimonial[] = [
   }
 ];
 
-export default function Page() {
+export default async function Page() {
+  const signinUrl = await getSignInUrl();
+  // const { user } = await withAuth();
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-white via-blue-50 to-white py-8 text-zinc-800">
       <nav className="fixed left-1/2 -translate-x-1/2 w-[90%] max-w-2xl mx-auto px-6 py-3 flex items-center justify-between bg-white/50 backdrop-blur-xl rounded-3xl border border-white/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.08)] transition-all duration-300 hover:bg-white/80 hover:shadow-[0_8px_32px_0_rgba(0,0,0,0.12)] z-50">
@@ -65,10 +74,20 @@ export default function Page() {
           </div>
           <span className="text-base font-medium">StudyBoost</span>
         </div>
+        {/* {user ? (
+          <div>
+            <Link href={"/chat"} className="text-sm rounded-2xl text-white bg-blue-600 hover:bg-blue-700 shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 font-medium px-6 py-2">
+              Go to Chat
+            </Link>
+          </div>
 
-        <Link href="/login" className="text-sm rounded-2xl text-white bg-blue-600 hover:bg-blue-700 shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 font-medium px-6 py-2">
+
+
+        ) : */}
+         <Link href={signinUrl} className="text-sm rounded-2xl text-white bg-blue-600 hover:bg-blue-700 shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 font-medium px-6 py-2">
           Log in
         </Link>
+        {/* } */}
       </nav>
 
       <section className="container max-w-6xl mx-auto px-4 pt-40 pb-24 text-center">
@@ -91,7 +110,7 @@ export default function Page() {
         </div>
       </section>
 
-      
+
 
       <section className="container max-w-6xl mx-auto px-16 py-24 text-center bg-white/60 backdrop-blur-xl rounded-[2.5rem] border border-white/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.08)]">
         <h2 className="text-blue-600 text-sm font-medium mb-12">

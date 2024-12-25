@@ -11,6 +11,7 @@ interface Bindings {
   VECTORIZE: VectorizeIndex;
   AI: Ai;
   TOGETHER_API_KEY: string;
+  R2_URL: string;
 }
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -366,7 +367,7 @@ app.post("/uploadFile", async (c) => {
       },
     });
 
-    const objectUrl = `https://pub-f9d9a09c81a24361aa5d514cdcbb72b2.r2.dev/${file.name}`;
+    const objectUrl = `${c.env.R2_URL}/${file.name}`;
 
     return c.json({
       success: true,

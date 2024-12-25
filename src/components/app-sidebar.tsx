@@ -16,6 +16,7 @@ import {
   Plus,
   ChevronsUp,
 } from "lucide-react";
+import {getUser} from "@/lib/authAction"
 
 import { NavFavorites } from "./nav-favorites";
 import { NavMain } from "./nav-main";
@@ -249,21 +250,20 @@ const user = {
   avatar: "https://github.com/shadcn.png",
 };
 
-const test = [
-  {
-    name: "John three",
-    url: "#",
-  }, 
-
-  {
-    name: "John Doe",
-    url: "#",
-  },
-]
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
-  const [test, setTest] = React.useState([]);
+  const [test, setTest] = React.useState([])
+  // const [user, setUser] = React.useState({})
+
+  // React.useEffect(() => {
+  //   const getUserDetails = async () => {
+  //     const user = await getUser();
+  //     console.log(user);
+  //     setUser(user);
+  //   }
+  //   getUserDetails();
+  // },[])
+
 
   const fetchChats = async () => {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/db/getAllChats`);
