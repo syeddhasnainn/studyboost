@@ -17,7 +17,7 @@ function isValidYoutubeUrl(url: string): boolean {
   return youtubeRegex.test(url);
 }
 
-export function ChatForm({ userId }: { userId: string }) {
+export function ChatForm({ userId }: { userId: string | undefined }) {
   const { toast } = useToast();
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);

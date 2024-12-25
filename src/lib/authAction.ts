@@ -1,12 +1,14 @@
 'use server';
+import { auth } from "@/auth"
+import { signOut as AuthSignOut } from "@/auth"
 
-import { signOut as workosSignOut, withAuth as customAuth } from '@workos-inc/authkit-nextjs';
 
 export async function signOut() {
-  await workosSignOut();
+  await AuthSignOut()
+
 }
 
 export async function getUser() {
-  const { user } = await customAuth({ ensureSignedIn: true });
-  return user;
+  const session = await auth()
+  if (session) return session.user
 }

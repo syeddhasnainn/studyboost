@@ -1,11 +1,13 @@
 import { ChatForm } from "@/components/chat/chat-form";
-import {
-  withAuth,
-} from '@workos-inc/authkit-nextjs';
+import { getUser } from "@/lib/authAction";
+
 
 
 export default async function Page() {
-  const { user } = await withAuth({ ensureSignedIn: true });
+  const user = await getUser()
+  console.log(user)
+  if (!user) return <div>Something went wrong!</div>
+
   const fetchUser = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/getUser`, {
     method: "POST",
     headers: {
@@ -13,6 +15,9 @@ export default async function Page() {
     },
     body: JSON.stringify({ user_id: user.id }),
   })
+
+  const firstName = user.name?.split(" ")[0]
+  const lastName = user.name?.split(" ")[user.name.length -1]
 
   const { userData } = await fetchUser.json() as any;
   if (!userData) {
@@ -22,7 +27,7 @@ export default async function Page() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ user_id: user.id, first_name: user.firstName, last_name: user.lastName, avatar: user.profilePictureUrl, email: user.email }),
+        body: JSON.stringify({ user_id: user.id, first_name: firstName, last_name: lastName, avatar: user.image, email: user.email }),
       })
     } catch (error) {
       console.error("Failed to add user:", error);
