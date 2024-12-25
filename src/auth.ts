@@ -29,16 +29,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
 
   callbacks: {
-    session({ session, token, user }) {
-      // `session.user.address` is now a valid property, and will be type-checked
-      // in places like `useSession().data.user` or `auth().user`
-      return {
-        ...session,
-        user: {
-          ...session.user,
-          id: user.id,
-        },
+    jwt({ token, user }) {
+      if (user) { // User is available during sign-in
+        token.id = user.id
       }
+      return token
+    },
+    session({ session, token, }) {
+      //@ts-ignore
+      session.user.id = token.id
+      return session
     },
   },
 })
