@@ -1,9 +1,14 @@
 import SignIn from "@/components/sign-in";
+import { auth } from "@/auth"
 
-export default function Page() {
+export default async function Page() {
+
+    const session = await auth()
+    if (!session?.user) return <div><SignIn /></div>
+
     return (
         <div>
-            <SignIn />
+            welcome {session.user.name}
         </div>
     )
 }
