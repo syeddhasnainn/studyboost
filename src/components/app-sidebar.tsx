@@ -244,25 +244,25 @@ const data = {
   ],
 };
 
-const user = {
-  name: "Hasnain",
-  email: "syedhasnain@gmail.com",
-  avatar: "https://github.com/shadcn.png",
-};
+// const user = {
+//   name: "Hasnain",
+//   email: "syedhasnain@gmail.com",
+//   avatar: "https://github.com/shadcn.png",
+// };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const [test, setTest] = React.useState([])
-  // const [user, setUser] = React.useState({})
+  const [user, setUser] = React.useState({})
 
-  // React.useEffect(() => {
-  //   const getUserDetails = async () => {
-  //     const user = await getUser();
-  //     console.log(user);
-  //     setUser(user);
-  //   }
-  //   getUserDetails();
-  // },[])
+  React.useEffect(() => {
+    const getUserDetails = async () => {
+      const user = await getUser();
+      console.log(user);
+      setUser(user);
+    }
+    getUserDetails();
+  },[])
 
 
   const fetchChats = async () => {
