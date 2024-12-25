@@ -4,6 +4,7 @@ import { Icons } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 // import { Badge } from "@/components/ui/badge";
 import { VerifiedIcon } from "lucide-react";
+import { SignInButton } from "@clerk/nextjs";
 
 
 interface Testimonial {
@@ -79,9 +80,11 @@ export default async function Page() {
 
 
         ) : */}
-         <Link href={"/login"} className="text-sm rounded-2xl text-white bg-blue-600 hover:bg-blue-700 shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 font-medium px-6 py-2">
-          Log in
-        </Link>
+         {/* <Link href={"/login"} className="text-sm rounded-2xl text-white bg-blue-600 hover:bg-blue-700 shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 font-medium px-6 py-2"> */}
+          {/* Log in */}
+                      <SignInButton />
+          
+        {/* </Link> */}
         {/* } */}
       </nav>
 

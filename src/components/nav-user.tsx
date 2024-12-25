@@ -1,5 +1,4 @@
 "use client"
-import { signOut } from "@/lib/authAction"
 import {
   BadgeCheck,
   Bell,
@@ -29,12 +28,15 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-
-export function NavUser({
-  user,
-}: any) {
+import { useUser } from '@clerk/nextjs'
+export function NavUser() {
   const { isMobile } = useSidebar()
-  console.log(user);
+
+  const { user } = useUser()
+
+  if (!user) return
+  console.log('user:',user)
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -45,12 +47,12 @@ export function NavUser({
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={user.profilePictureUrl} alt={user.lastName} />
+                <AvatarImage src={user.imageUrl}  />
                 {/* <AvatarFallback className="rounded-lg">CN</AvatarFallback> */}
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{`${user.name} ${user.name}`}</span>
-                <span className="truncate text-xs">{user.email}</span>
+                <span className="truncate font-semibold">{`${user.firstName} ${user.lastName}`}</span>
+                <span className="truncate text-xs">{user.emailAddresses[0].emailAddress}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -61,13 +63,9 @@ export function NavUser({
             align="end"
             sideOffset={4}
           >
-
             <DropdownMenuItem>
 
               <LogOut />
-              <form action={signOut} >
-                <button type="submit">Logout</button>
-              </form>
 
             </DropdownMenuItem>
           </DropdownMenuContent>

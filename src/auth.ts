@@ -36,7 +36,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return token
     },
     session({ session, token, }) {
-      //@ts-ignore
+      // @ts-ignore
       session.user.id = token.id
       return session
     },

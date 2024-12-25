@@ -1,5 +1,4 @@
 import { ChatUI } from "@/components/chat/ChatUI";
-import { getUser } from "@/lib/authAction";
 import { IMessage } from "@/types/api";
 
 interface PageProps {
@@ -26,7 +25,6 @@ async function getChatInfo(chatId: string) {
 
 export default async function ChatPage({ params }: PageProps) {
   const chatId = params.id;
-  const user = await getUser()
 
   const [messages, chatInfo] = await Promise.all([
     getMessages(chatId),

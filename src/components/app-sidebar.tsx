@@ -16,7 +16,6 @@ import {
   Plus,
   ChevronsUp,
 } from "lucide-react";
-import {getUser} from "@/lib/authAction"
 
 import { NavFavorites } from "./nav-favorites";
 import { NavMain } from "./nav-main";
@@ -30,6 +29,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { NavUser } from "./nav-user";
+import { currentUser } from "@clerk/nextjs/server";
 // This is sample data.
 const data = {
   teams: [
@@ -253,16 +253,17 @@ const data = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const [test, setTest] = React.useState([])
-  const [user, setUser] = React.useState({})
+  // const [user, setUser] = React.useState({})
 
-  React.useEffect(() => {
-    const getUserDetails = async () => {
-      const user = await getUser();
-      if (user) setUser(user);
+  // React.useEffect(() => {
+  //   const getUserDetails = async () => {
+  //     const user = await currentUser()
       
-    }
-    getUserDetails();
-  },[])
+  //     if (user) setUser(user);
+      
+  //   }
+  //   getUserDetails();
+  // },[])
 
 
   const fetchChats = async () => {
@@ -289,7 +290,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavFavorites favorites={test} />
         {/* <NavWorkspaces workspaces={data.workspaces} /> */}
       </SidebarContent>
-      <NavUser user={user} />
+      <NavUser  />
       <SidebarRail />
     </Sidebar>
   );

@@ -1,3 +1,10 @@
+import {
+  ClerkProvider,
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserButton
+} from '@clerk/nextjs'
 import type { Metadata } from "next";
 import { Toaster } from "@/components/ui/toaster"
 
@@ -17,11 +24,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={GeistSans.className}>
-        {children}
+    <ClerkProvider>
+      <html lang="en">
+        <body>
+          <SignedOut>
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
+          {children}
           <Toaster />
         </body>
-    </html>
+      </html>
+    </ClerkProvider>
   );
 }
