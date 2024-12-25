@@ -32,6 +32,7 @@ app.use(
   cors({
     origin: [
       "*",
+      "https://studyboost.vercel.app",
       "http://localhost:3000",
       "https://studyboost.org",
       "https://www.studyboost.org",
