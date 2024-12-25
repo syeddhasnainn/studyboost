@@ -6,7 +6,8 @@ import { auth } from "@/auth"
 export default async function Page() {
   console.log('env', process.env.NEXT_PUBLIC_API_URL)
   const session = await auth()
-  console.log(session)
+  console.log(session?.user.id)
+
   if (!session) return <div>something went wrong</div>
 
   const user = session.user
