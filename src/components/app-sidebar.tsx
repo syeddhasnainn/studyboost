@@ -258,8 +258,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   React.useEffect(() => {
     const getUserDetails = async () => {
       const user = await getUser();
-      console.log(user);
-      setUser(user);
+      if (user) setUser(user);
+      
     }
     getUserDetails();
   },[])
