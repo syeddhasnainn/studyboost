@@ -13,19 +13,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
 
   callbacks: {
-    async jwt({ token, user }) {
-      // Persist the user ID to the token right after sign-in
-      if (user) {
-        token.id = user.id;
+    session({ session, token, user }) {
+      // `session.user.address` is now a valid property, and will be type-checked
+      // in places like `useSession().data.user` or `auth().user`
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: user.id,
+        },
       }
-      return token;
-    },
-    async session({ session, token }) {
-      // Send the user ID to the client
-      if (token) {
-        session.user.id = token.id;
-      }
-      return session;
     },
   },
 })
