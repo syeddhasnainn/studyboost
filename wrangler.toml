@@ -1,6 +1,6 @@
 #:schema node_modules/wrangler/config-schema.json
 name = "studyboost"
-main = ".worker-next/index.mjs"
+main = ".open-next/worker.js"
 
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
@@ -9,8 +9,8 @@ compatibility_flags = ["nodejs_compat"]
 minify = true
 
 # Use the new Workers + Assets to host the static frontend files
-assets = { directory = ".worker-next/assets", binding = "ASSETS" }
+assets = { directory = ".open-next/assets", binding = "ASSETS" }
 
-routes = [
-  { pattern = "studyboost.org", custom_domain = true }
-]
+#routes = [
+#  { pattern = "studyboost.org", custom_domain = true }
+#]

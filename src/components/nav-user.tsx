@@ -66,6 +66,7 @@ export function NavUser() {
             <DropdownMenuItem>
 
               <LogOut />
+              Logout
 
             </DropdownMenuItem>
           </DropdownMenuContent>

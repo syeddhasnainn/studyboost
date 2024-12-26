@@ -22,9 +22,8 @@ export default async function Page() {
   
   
   const user = await currentUser()
-  if(!user) return <div>Forbidden!</div>
+  if(!user) return
   
-
   if (!userData) {
     try {
       await fetch(`${process.env.NEXT_PUBLIC_API_URL}/addUser`, {
