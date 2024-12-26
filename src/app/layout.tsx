@@ -26,7 +26,6 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-      <Analytics />
 
         <body>
           <SignedOut>
@@ -34,6 +33,8 @@ export default function RootLayout({
           <SignedIn>
           </SignedIn>
           {children}
+          <Analytics />
+
           <Toaster />
         </body>
       </html>
