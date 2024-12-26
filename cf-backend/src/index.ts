@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import Together from "together-ai";
-import { YoutubeTranscript } from "youtube-transcript";
+import { YoutubeTranscript, YoutubeTranscriptTooManyRequestError } from "youtube-transcript";
 import { cors } from "hono/cors";
 import { z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
@@ -36,6 +36,7 @@ app.use(
       "http://localhost:3000",
       "https://studyboost.org",
       "https://www.studyboost.org",
+      "https://studyboost.org",
     ],
     credentials: true,
   })
@@ -309,6 +310,7 @@ app.get("/youtube/transcript", async (c) => {
     if (!transcript.length || transcript[0].lang !== "en") {
       return c.json({ error: "No transcript found" }, 400);
     }
+
     const textForSummary = transcript
       .map((entry) => `${entry.text} - ${entry.offset}`)
       .join(" | ");
@@ -323,22 +325,29 @@ app.get("/youtube/transcript", async (c) => {
 
     const jsonSchema = zodToJsonSchema(summarySchema, "summarySchema");
 
-    const processedSummary = await together.chat.completions.create({
-      messages: [
-        {
-          role: "system",
-          content:
-            "The following is a youtube transcript with timestamps. Analyze the text and make multiple chapters with title, summary and the starting timestamp only that is in the transcript. The chapters should always be in the same order as the transcript. The summaries should be atleast 50-100 words. Only answer in JSON.",
-        },
-        {
-          role: "user",
-          content: textForSummary,
-        },
-      ],
-      model: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
-      // @ts-ignore
-      response_format: { type: "json_object", schema: jsonSchema },
-    });
+
+    try {
+      var processedSummary = await together.chat.completions.create({
+        messages: [
+          {
+            role: "system",
+            content:
+              "The following is a youtube transcript with timestamps. Analyze the text and make multiple chapters with title, summary and the starting timestamp only that is in the transcript. The chapters should always be in the same order as the transcript. The summaries should be atleast 50-100 words. Only answer in JSON.",
+          },
+          {
+            role: "user",
+            content: textForSummary,
+          },
+        ],
+        model: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
+        // @ts-ignore
+        response_format: { type: "json_object", schema: jsonSchema },
+      });
+    }
+    catch {
+      return c.json({ error: "Error processing summaries" }, 400);
+    }
+    
 
     if (processedSummary?.choices?.[0]?.message?.content) {
       const summary = JSON.parse(
@@ -368,7 +377,7 @@ app.post("/uploadFile", async (c) => {
       },
     });
 
-    const objectUrl = `${c.env.R2_URL}/${file.name}`;
+    const objectUrl = `${c.env.R2_URL}${file.name}`;
 
     return c.json({
       success: true,

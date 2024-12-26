@@ -18,6 +18,7 @@ interface PDFViewerProps {
 }
 
 function PDFViewer({ url, className }: PDFViewerProps) {
+  console.log('pdf url',url);
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
   const toolbarPluginInstance = toolbarPlugin();
   const zoomPluginInstance = zoomPlugin();

@@ -1,20 +1,5 @@
 "use client";
-import { AppSidebar } from "@/components/app-sidebar";
 import { PDFViewer } from "@/components/PDFViewer";
-import { Button } from "@/components/ui/button";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbPage,
-} from "@/components/ui/breadcrumb";
-import { Separator } from "@/components/ui/separator";
-
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
 import { Textarea } from "@/components/ui/textarea";
 import React, { useEffect, useRef, useState } from "react";
 import { VideoTranscript } from "@/components/VideoTranscript";

@@ -30,7 +30,6 @@ export default function RootLayout({
           <SignedOut>
           </SignedOut>
           <SignedIn>
-            <UserButton />
           </SignedIn>
           {children}
           <Toaster />

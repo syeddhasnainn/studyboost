@@ -62,7 +62,9 @@ export default async function Page() {
   // const { user } = await withAuth();
 
   return (
+
     <main className="min-h-screen bg-gradient-to-b from-white via-blue-50 to-white py-8 text-zinc-800">
+      <div className="max-w-6xl mx-auto px-12">
       <nav className="fixed left-1/2 -translate-x-1/2 w-[90%] max-w-2xl mx-auto px-6 py-3 flex items-center justify-between bg-white/50 backdrop-blur-xl rounded-3xl border border-white/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.08)] transition-all duration-300 hover:bg-white/80 hover:shadow-[0_8px_32px_0_rgba(0,0,0,0.12)] z-50">
         <div className="flex items-center gap-2 group">
           <div className="h-6 w-6 transition-transform duration-300 group-hover:scale-110">
@@ -82,7 +84,10 @@ export default async function Page() {
         ) : */}
          {/* <Link href={"/login"} className="text-sm rounded-2xl text-white bg-blue-600 hover:bg-blue-700 shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 font-medium px-6 py-2"> */}
           {/* Log in */}
-                      <SignInButton />
+          <div className="text-sm rounded-2xl text-white bg-blue-600 hover:bg-blue-700 shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 font-medium px-6 py-2">
+          <SignInButton />
+
+          </div>
           
         {/* </Link> */}
         {/* } */}
@@ -488,6 +493,8 @@ export default async function Page() {
           </div>
         </div>
       </footer>
+      </div>
+      
     </main>
   );
 }
