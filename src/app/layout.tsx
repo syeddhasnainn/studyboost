@@ -7,7 +7,7 @@ import {
 } from '@clerk/nextjs'
 import type { Metadata } from "next";
 import { Toaster } from "@/components/ui/toaster"
-
+import { Analytics } from "@vercel/analytics/react"
 // import { Inter, Geist } from "next/font/google";
 import { GeistSans } from "geist/font/sans";
 import "./globals.css";
@@ -26,6 +26,8 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
+      <Analytics />
+
         <body>
           <SignedOut>
           </SignedOut>
