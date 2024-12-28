@@ -1,10 +1,7 @@
-import { useStore } from "@/hooks/use-store";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
-import React from "react";
-import { LoadingSpinner } from "./ui/loading-spinner";
-import useSWR from "swr";
 import { fetcher } from "@/lib/utils";
+import useSWR from "swr";
+import { LoadingSpinner } from "./ui/loading-spinner";
 
 function formatTime(seconds: string): string {
   const sec = parseInt(seconds);
@@ -23,7 +20,6 @@ function formatTime(seconds: string): string {
 }
 
 export function VideoTranscript({ chat_id }: any) {
-  const { transcript, setSummary } = useStore();
 
   const handleTimestampClick = (timestamp: string) => {
     const iframe = document.querySelector("iframe");

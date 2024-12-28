@@ -1,43 +1,57 @@
 "use client";
 import { PDFViewer } from "@/components/PDFViewer";
-import { Textarea } from "@/components/ui/textarea";
-import React, { useEffect, useRef, useState } from "react";
-import { VideoTranscript } from "@/components/VideoTranscript";
-import { useStore } from "@/hooks/use-store";
-import * as ResizablePrimitive from "react-resizable-panels";
 import { ResizableHandle, ResizablePanel } from "@/components/ui/resizable";
+import { Textarea } from "@/components/ui/textarea";
+import { VideoTranscript } from "@/components/VideoTranscript";
+import { fetcher } from "@/lib/utils";
 import { ChatMessagesProps } from "@/types/chat";
-import { useToast } from "@/hooks/use-toast";
+import React, { useEffect, useRef, useState } from "react";
+import * as ResizablePrimitive from "react-resizable-panels";
+import useSWR from "swr";
+import useSWRImmutable from 'swr/immutable'
+
 export interface ChatInfoProps {
-  chat: {
-    chat_id: string;
-    resource_id: string;
-    resource_link: string;
-  };
+    chat : {
+      chat_id: string;
+      resource_id: string;
+      resource_link: string;
+    }
 }
 
-export function ChatUI({
-  chatInfo,
-  messages,
-}: {
-  chatInfo: ChatInfoProps;
-  messages: ChatMessagesProps[];
-}) {
-  const resourceUrl = chatInfo.chat.resource_link;
-  const resourceId = chatInfo.chat.resource_id;
+interface Message {
+  role: string;
+  content: string;
+}
 
-  const [chatMessages, setChatMessages] =
-    useState<ChatMessagesProps[]>(messages);
-
-  useEffect(() => {
-    setChatMessages(messages);
-  }, [messages]);
-
-  const { addMessage, chatId, setChatId, setMessages } = useStore();
+interface IMessage {
+  messages: Message[]
+}
 
 
+
+export function ChatUI({chatId}: {chatId: string}) {
+
+  const [chatMessages, setChatMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const questionRef = useRef<HTMLTextAreaElement>(null);
+
+  const {data: messages, isLoading: isFetching } = useSWR<IMessage>(`${process.env.NEXT_PUBLIC_API_URL}/db/getMessages?chatId=${chatId}`, fetcher, {revalidateOnFocus: false})
+
+  const {data:chat} = useSWRImmutable<ChatInfoProps>(`${process.env.NEXT_PUBLIC_API_URL}/db/getChat?chatId=${chatId}`, fetcher)
+
+
+  useEffect(() => {
+    if (messages) {
+      setChatMessages(messages.messages);
+    }
+  }, [messages, chatMessages]);
+
+  console.log('chat message',chatMessages)
+
+
+
+  const resourceUrl = chat?.chat.resource_link;
+  const resourceId = chat?.chat.resource_id;
 
   async function handleSubmit(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -58,7 +72,7 @@ export function ChatUI({
           body: JSON.stringify({
             message: newMessage,
             resourceId,
-            chatId: chatInfo.chat.chat_id,
+            chatId: chat?.chat.chat_id,
           }),
         });
 
@@ -92,16 +106,13 @@ export function ChatUI({
         await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat`, {
           method: "PUT",
           body: JSON.stringify({
-            chatId: chatInfo.chat.chat_id,
+            chatId: chat?.chat.chat_id,
             content: assistantMessage.content,
           }),
         });
       }
     }
   }
-
-  const {toast} = useToast()
-
 
   return (
     <div className="flex flex-1 p-4 my-14 pt-0 ">
@@ -118,12 +129,12 @@ export function ChatUI({
                   src={`https://www.youtube.com/embed/${resourceId}?enablejsapi=1`}
                   className="w-full aspect-video rounded-lg"
                   allowFullScreen
+                  loading="lazy"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 />
               </div>
-
               <div className="flex-1 min-h-0 overflow-y-auto">
-                <VideoTranscript chat_id={chatInfo.chat.chat_id}/>
+                <VideoTranscript chat_id={chat?.chat.chat_id} />
               </div>
             </div>
           )}
@@ -141,7 +152,7 @@ export function ChatUI({
             <div className="flex-1 overflow-hidden">
               <div className="h-full overflow-y-auto px-4 pb-4">
                 <ul className="flex flex-col gap-2">
-                  {chatMessages.map((message: any, index: any) => (
+                  {chatMessages.map((message: Message, index: number) => (
                     <li
                       className={`p-3 rounded-xl max-w-[85%] ${
                         message.role === "user"

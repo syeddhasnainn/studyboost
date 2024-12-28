@@ -2,7 +2,6 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-// import { Badge } from "@/components/ui/badge";
 import { VerifiedIcon } from "lucide-react";
 import { SignInButton } from "@clerk/nextjs";
 

@@ -183,6 +183,8 @@ export function ChatForm({ userId }: { userId: string }) {
 
   const handleFileUpload = async (file: File) => {
     if (file.type === "application/pdf") {
+      setIsLoading(true);
+      setProgress(10);
       const formData = new FormData();
       formData.append("file", file);
 
@@ -195,6 +197,8 @@ export function ChatForm({ userId }: { userId: string }) {
         if (!response.ok) throw new Error("Upload failed");
 
         const data = await response.json() as IFileUploadResponse;
+        setProgress(40);
+
 
         const id = nanoid(10);
         setResourceUrl(data.objectUrl);
@@ -211,9 +215,15 @@ export function ChatForm({ userId }: { userId: string }) {
           }),
         });
 
+        setProgress(100);
+
+
         router.push(`/chat/${id}`);
       } catch (error) {
         console.error("Error uploading file:", error);
+      } finally {
+        setIsLoading(false);
+        setProgress(0);
       }
     }
   };

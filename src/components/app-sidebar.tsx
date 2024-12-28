@@ -1,35 +1,28 @@
 "use client";
 
-import * as React from "react";
 import {
   AudioWaveform,
   Blocks,
   Calendar,
-  Command,
-  Home,
-  Inbox,
-  MessageCircleQuestion,
-  Search,
-  Settings2,
-  Sparkles,
-  Trash2,
-  Plus,
   ChevronsUp,
+  Command,
+  MessageCircleQuestion,
+  Plus,
+  Settings2,
+  Trash2
 } from "lucide-react";
+import * as React from "react";
 
-import { NavFavorites } from "./nav-favorites";
-import { NavMain } from "./nav-main";
-import { NavSecondary } from "./nav-secondary";
-import { NavWorkspaces } from "./nav-workspaces";
-import { TeamSwitcher } from "./team-switcher";
 import {
   Sidebar,
   SidebarContent,
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { NavFavorites } from "./nav-favorites";
+import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
-import { currentUser } from "@clerk/nextjs/server";
+import { TeamSwitcher } from "./team-switcher";
 // This is sample data.
 const data = {
   teams: [

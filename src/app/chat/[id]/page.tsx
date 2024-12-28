@@ -1,5 +1,7 @@
 import { ChatUI } from "@/components/chat/ChatUI";
+import Loading from "@/components/loading";
 import { IMessage } from "@/types/api";
+import { Suspense } from 'react';
 
 interface PageProps {
   params: {
@@ -26,15 +28,15 @@ async function getChatInfo(chatId: string) {
 export default async function ChatPage({ params }: PageProps) {
   const chatId = params.id;
 
-  const [messages, chatInfo] = await Promise.all([
-    getMessages(chatId),
-    getChatInfo(chatId)
-  ]);
+  // const [messages, chatInfo] = await Promise.all([
+  //   getMessages(chatId),
+  //   getChatInfo(chatId)
+  // ]);
 
   return (
-    <ChatUI
-      chatInfo={{ chat: chatInfo }}
-      messages={messages}
+  <ChatUI
+    chatId={chatId}
     />
+    
   );
 }
