@@ -28,6 +28,8 @@ export function ChatForm({ userId }: { userId: string }) {
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
+  const [isYoutube, setIsYoutube] = useState(false);
+  const [isPdf, setIsPdf] = useState(false);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
