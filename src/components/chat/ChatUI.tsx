@@ -8,14 +8,15 @@ import { ChatMessagesProps } from "@/types/chat";
 import React, { useEffect, useRef, useState } from "react";
 import * as ResizablePrimitive from "react-resizable-panels";
 import useSWR from "swr";
-import useSWRImmutable from 'swr/immutable'
+import useSWRImmutable from "swr/immutable";
+import { Button } from "../ui/button";
 
 export interface ChatInfoProps {
-    chat : {
-      chat_id: string;
-      resource_id: string;
-      resource_link: string;
-    }
+  chat: {
+    chat_id: string;
+    resource_id: string;
+    resource_link: string;
+  };
 }
 
 interface Message {
@@ -24,31 +25,32 @@ interface Message {
 }
 
 interface IMessage {
-  messages: Message[]
+  messages: Message[];
 }
 
-
-
-export function ChatUI({chatId}: {chatId: string}) {
-
+export function ChatUI({ chatId }: { chatId: string }) {
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const questionRef = useRef<HTMLTextAreaElement>(null);
 
-  const {data: messages, isLoading: isFetching } = useSWR<IMessage>(`${process.env.NEXT_PUBLIC_API_URL}/db/getMessages?chatId=${chatId}`, fetcher, {revalidateOnFocus: false})
+  const { data: messages, isLoading: isFetching, mutate } = useSWR<IMessage>(
+    `${process.env.NEXT_PUBLIC_API_URL}/db/getMessages?chatId=${chatId}`,
+    fetcher,
+    { refreshInterval: 1000 }
+  );
 
-  const {data:chat} = useSWRImmutable<ChatInfoProps>(`${process.env.NEXT_PUBLIC_API_URL}/db/getChat?chatId=${chatId}`, fetcher)
-
+  const { data: chat } = useSWRImmutable<ChatInfoProps>(
+    `${process.env.NEXT_PUBLIC_API_URL}/db/getChat?chatId=${chatId}`,
+    fetcher
+  );
 
   useEffect(() => {
     if (messages) {
       setChatMessages(messages.messages);
     }
-  }, [messages, chatMessages]);
+  }, [messages]);
 
-  console.log('chat message',chatMessages)
-
-
+  console.log("chat message", chatMessages);
 
   const resourceUrl = chat?.chat.resource_link;
   const resourceId = chat?.chat.resource_id;
@@ -110,6 +112,8 @@ export function ChatUI({chatId}: {chatId: string}) {
             content: assistantMessage.content,
           }),
         });
+
+        mutate();
       }
     }
   }
@@ -133,8 +137,14 @@ export function ChatUI({chatId}: {chatId: string}) {
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 />
               </div>
-              <div className="flex-1 min-h-0 overflow-y-auto">
-                <VideoTranscript chat_id={chat?.chat.chat_id} />
+
+              <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide">
+                <div className="flex gap-4">
+                  <Button variant="secondary">Extract Summary</Button>
+                </div>
+                <div>
+                  <VideoTranscript chat_id={chat?.chat.chat_id} />
+                </div>
               </div>
             </div>
           )}
@@ -144,11 +154,6 @@ export function ChatUI({chatId}: {chatId: string}) {
 
         <ResizablePanel defaultSize={60} minSize={30}>
           <div className="h-[calc(100vh-6rem)] flex flex-col">
-            <div className="flex gap-4 mb-4">
-              {/* <Button variant="secondary">Chat</Button>
-              <Button variant="secondary">Summary</Button> */}
-            </div>
-
             <div className="flex-1 overflow-hidden">
               <div className="h-full overflow-y-auto px-4 pb-4">
                 <ul className="flex flex-col gap-2">

@@ -4,13 +4,13 @@ import { Input } from "@/components/ui/input";
 import { PaperclipIcon } from "lucide-react";
 import { useState, useRef, DragEvent } from "react";
 import { useRouter } from "next/navigation";
-import { useStore } from "@/hooks/use-store";
 import { nanoid } from "nanoid";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { IChat, IFileUploadResponse, ITranscriptResponse } from "@/types/api";
+import { useChatContext } from "@/context/ChatContext";
 
 function isValidYoutubeUrl(url: string): boolean {
   const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/;
@@ -23,7 +23,13 @@ export function ChatForm({ userId }: { userId: string }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const { setResourceId, setChatId, setTranscript, setResourceUrl, setSummary } = useStore();
+  const {
+    setResourceId,
+    setChatId,
+    setTranscript,
+    setResourceUrl,
+    setSummary,
+  } = useChatContext();
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -52,9 +58,11 @@ export function ChatForm({ userId }: { userId: string }) {
       setProgress(10);
 
       const youtubeId = youtubeUrl.split("v=")[1];
-      const chats = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/db/getAllChats`);
-      const { results } = await chats.json() as { results: IChat[] };
-      const filteredChats = results.filter(c => c.resource_id === youtubeId);
+      const chats = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/db/getAllChats`
+      );
+      const { results } = (await chats.json()) as { results: IChat[] };
+      const filteredChats = results.filter((c) => c.resource_id === youtubeId);
       const chatId = nanoid(10);
 
       setResourceId(youtubeId);
@@ -74,10 +82,10 @@ export function ChatForm({ userId }: { userId: string }) {
         const transcriptResponse = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/youtube/transcript?videoId=${youtubeId}`
         );
-        var data = await transcriptResponse.json() as ITranscriptResponse;
+        var data = (await transcriptResponse.json()) as ITranscriptResponse;
 
         setTranscript(data.transcript);
-        setSummary(data.summary);
+        // setSummary(data.summary);
 
         setProgress(50);
 
@@ -90,10 +98,18 @@ export function ChatForm({ userId }: { userId: string }) {
         }
       } catch (error) {
         toast({
-          variant: 'destructive',
+          variant: "destructive",
           title: "Uh oh! Something went wrong.",
           description: "There was a problem fetching video",
-          action: <Button className="border" onClick={handleSubmit} variant={"destructive"}>Try Again</Button>
+          action: (
+            <Button
+              className="border"
+              onClick={handleSubmit}
+              variant={"destructive"}
+            >
+              Try Again
+            </Button>
+          ),
         });
         return;
       }
@@ -114,10 +130,18 @@ export function ChatForm({ userId }: { userId: string }) {
         await vectorUploadResponse.json();
       } catch (error) {
         toast({
-          variant: 'destructive',
+          variant: "destructive",
           title: "Uh oh! Something went wrong.",
           description: "There was a problem with vector db",
-          action: <Button className="border" onClick={handleSubmit} variant={"destructive"}>Try Again</Button>
+          action: (
+            <Button
+              className="border"
+              onClick={handleSubmit}
+              variant={"destructive"}
+            >
+              Try Again
+            </Button>
+          ),
         });
         return;
       }
@@ -130,7 +154,7 @@ export function ChatForm({ userId }: { userId: string }) {
           resourceId: youtubeId,
           chatId,
           resourceUrl: inputRef.current?.value,
-          userId
+          userId,
         }),
       });
 
@@ -138,8 +162,8 @@ export function ChatForm({ userId }: { userId: string }) {
         method: "POST",
         body: JSON.stringify({
           chat_id: chatId,
-          summary: data.summary
-        })
+          summary: data.summary,
+        }),
       });
 
       setProgress(100);
@@ -176,9 +200,9 @@ export function ChatForm({ userId }: { userId: string }) {
       handleFileUpload(droppedFile);
     } else {
       toast({
-        variant: 'destructive',
+        variant: "destructive",
         title: "Invalid file type",
-        description: "Please upload a PDF file"
+        description: "Please upload a PDF file",
       });
     }
   };
@@ -191,16 +215,18 @@ export function ChatForm({ userId }: { userId: string }) {
       formData.append("file", file);
 
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/uploadFile`, {
-          method: "POST",
-          body: formData,
-        });
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/uploadFile`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
 
         if (!response.ok) throw new Error("Upload failed");
 
-        const data = await response.json() as IFileUploadResponse;
+        const data = (await response.json()) as IFileUploadResponse;
         setProgress(40);
-
 
         const id = nanoid(10);
         setResourceUrl(data.objectUrl);
@@ -213,12 +239,11 @@ export function ChatForm({ userId }: { userId: string }) {
             resourceId: id,
             chatId: id,
             resourceUrl: data.objectUrl,
-            userId
+            userId,
           }),
         });
 
         setProgress(100);
-
 
         router.push(`/chat/${id}`);
       } catch (error) {
@@ -231,9 +256,12 @@ export function ChatForm({ userId }: { userId: string }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-4xl mx-auto mt-8 px-4">
+    <form
+      onSubmit={handleSubmit}
+      className="w-full max-w-4xl mx-auto mt-8 px-4"
+    >
       <div
-        className={`flex flex-col gap-4 ${isDragging ? 'bg-secondary/20' : ''}`}
+        className={`flex flex-col gap-4 ${isDragging ? "bg-secondary/20" : ""}`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
@@ -243,11 +271,9 @@ export function ChatForm({ userId }: { userId: string }) {
             ref={inputRef}
             type="text"
             placeholder="Enter YouTube URL or Drag and Drop PDF"
-            className="w-full pr-10"
+            className="w-full pr-10 h-14 text-lg bg-white shadow-sm rounded-2xl"
           />
-          <label
-            className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
-          >
+          <label className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer">
             <PaperclipIcon className="h-5 w-5 text-gray-400 hover:text-gray-600 animate" />
             <input
               type="file"

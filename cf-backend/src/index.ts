@@ -1,6 +1,9 @@
 import { Hono } from "hono";
 import Together from "together-ai";
-import { YoutubeTranscript, YoutubeTranscriptTooManyRequestError } from "youtube-transcript";
+import {
+  YoutubeTranscript,
+  YoutubeTranscriptTooManyRequestError,
+} from "youtube-transcript";
 import { cors } from "hono/cors";
 import { z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
@@ -72,7 +75,7 @@ async function* makeIterator(messages: any) {
 }
 
 app.get("/", async (c) => {
-  return c.json({ message: "how did you get here?"});
+  return c.json({ message: "how did you get here?" });
 });
 
 app.post("/chat", async (c) => {
@@ -257,13 +260,13 @@ app.post("/db/saveSummary", async (c) => {
   try {
     const { chat_id, summary } = await c.req.json();
 
-    const stmt = c.env.DB.prepare(`INSERT INTO chapter_summaries (chat_id, title, content, timestmp) VALUES (?, ?, ?, ?);`)
-    const batchSummary = summary.map((s:any) =>
+    const stmt = c.env.DB.prepare(
+      `INSERT INTO chapter_summaries (chat_id, title, content, timestmp) VALUES (?, ?, ?, ?);`
+    );
+    const batchSummary = summary.map((s: any) =>
       stmt.bind(chat_id, s.title, s.content, s.timestamp)
     );
-    const batchResults = await c.env.DB.batch(
-      batchSummary
-    )
+    const batchResults = await c.env.DB.batch(batchSummary);
 
     return c.json({ msg: "Saved Chapter Summaries to the DB" });
   } catch {
@@ -294,7 +297,9 @@ app.get("/db/getSummary", async (c) => {
 });
 
 app.get("/db/getAllChats", async (c) => {
-  const { results } = await c.env.DB.prepare("SELECT * FROM chats ORDER BY created_at DESC;").all();
+  const { results } = await c.env.DB.prepare(
+    "SELECT * FROM chats ORDER BY created_at DESC;"
+  ).all();
   return c.json({ results });
 });
 
@@ -315,49 +320,57 @@ app.get("/youtube/transcript", async (c) => {
       .map((entry) => `${entry.text} - ${entry.offset}`)
       .join(" | ");
 
-    const summarySchema = z.array(
-      z.object({
-        title: z.string().describe("title of the chapter"),
-        content: z.string().describe("summary of the chapter"),
-        timestamp: z.number().describe("timestamp of the chapter"),
-      })
-    );
+    return c.json({ transcript });
+  } catch (error) {
+    return c.json({ error: "Failed to fetch transcript" }, 500);
+  }
+});
 
-    const jsonSchema = zodToJsonSchema(summarySchema, "summarySchema");
+// New route for AI summary
+app.post("/getAISummary", async (c) => {
+  const { textForSummary } = await c.req.json();
 
+  if (!textForSummary) {
+    return c.json({ error: "Text for summary is required" }, 400);
+  }
 
-    try {
-      var processedSummary = await together.chat.completions.create({
-        messages: [
-          {
-            role: "system",
-            content:
-              "The following is a youtube transcript with timestamps. Analyze the text and make multiple chapters with title, summary and the starting timestamp only that is in the transcript. The chapters should always be in the same order as the transcript. The summaries should be atleast 50-100 words. Only answer in JSON.",
-          },
-          {
-            role: "user",
-            content: textForSummary,
-          },
-        ],
-        model: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
-        // @ts-ignore
-        response_format: { type: "json_object", schema: jsonSchema },
-      });
-    }
-    catch {
-      return c.json({ error: "Error processing summaries" }, 400);
-    }
-    
+  const summarySchema = z.array(
+    z.object({
+      title: z.string().describe("title of the chapter"),
+      content: z.string().describe("summary of the chapter"),
+      timestamp: z.number().describe("timestamp of the chapter"),
+    })
+  );
+
+  const jsonSchema = zodToJsonSchema(summarySchema, "summarySchema");
+
+  try {
+    const processedSummary = await together.chat.completions.create({
+      messages: [
+        {
+          role: "system",
+          content:
+            "The following is a youtube transcript with timestamps. Analyze the text and make multiple chapters with title, summary and the starting timestamp only that is in the transcript. The chapters should always be in the same order as the transcript. The summaries should be at least 50-100 words. Only answer in JSON.",
+        },
+        {
+          role: "user",
+          content: textForSummary,
+        },
+      ],
+      model: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
+      // @ts-ignore
+      response_format: { type: "json_object", schema: jsonSchema },
+    });
 
     if (processedSummary?.choices?.[0]?.message?.content) {
       const summary = JSON.parse(
         processedSummary?.choices?.[0]?.message?.content
       );
 
-      return c.json({ summary, transcript });
+      return c.json({ summary });
     }
-  } catch (error) {
-    return c.json({ error: "Failed to fetch transcript" }, 500);
+  } catch {
+    return c.json({ error: "Error processing summaries" }, 400);
   }
 });
 
@@ -393,20 +406,26 @@ app.post("/uploadFile", async (c) => {
   }
 });
 
-
 //USERS
 
 app.post("getUser", async (c) => {
   const { user_id } = await c.req.json();
-  const userData = await c.env.DB.prepare("SELECT * FROM users WHERE user_id = ?").bind(user_id).first();
+  const userData = await c.env.DB.prepare(
+    "SELECT * FROM users WHERE user_id = ?"
+  )
+    .bind(user_id)
+    .first();
   return c.json({ userData });
 });
 
-
-app.post("/addUser", async(c) => {
+app.post("/addUser", async (c) => {
   const { user_id, first_name, last_name, avatar, email } = await c.req.json();
-  await c.env.DB.prepare("INSERT INTO users (user_id, first_name, last_name, avatar, email) VALUES (?, ?, ?, ?, ?)").bind(user_id, first_name, last_name, avatar, email).run();
+  await c.env.DB.prepare(
+    "INSERT INTO users (user_id, first_name, last_name, avatar, email) VALUES (?, ?, ?, ?, ?)"
+  )
+    .bind(user_id, first_name, last_name, avatar, email)
+    .run();
   return c.json({ success: "user added" });
-})
+});
 
 export default app;

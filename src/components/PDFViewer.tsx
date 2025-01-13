@@ -9,8 +9,9 @@ import { extractText, getDocumentProxy } from "unpdf";
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 import "@react-pdf-viewer/toolbar/lib/styles/index.css";
-import { useStore } from "@/hooks/use-store";
+// import { useStore } from "@/hooks/use-store";
 import { useRef } from "react";
+import { useChatContext } from "@/context/ChatContext";
 
 interface PDFViewerProps {
   url: string | null;
@@ -22,7 +23,7 @@ function PDFViewer({ url, className }: PDFViewerProps) {
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
   const toolbarPluginInstance = toolbarPlugin();
   const zoomPluginInstance = zoomPlugin();
-  const { resourceUrl, resourceId } = useStore();
+  const { resourceUrl, resourceId } = useChatContext();
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

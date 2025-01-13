@@ -11,6 +11,7 @@ import { Analytics } from "@vercel/analytics/react"
 // import { Inter, Geist } from "next/font/google";
 import { GeistSans } from "geist/font/sans";
 import "./globals.css";
+import { ChatProvider } from "@/context/ChatContext";
 
 // const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
@@ -32,7 +33,9 @@ export default function RootLayout({
           </SignedOut>
           <SignedIn>
           </SignedIn>
-          {children}
+          <ChatProvider>
+            {children}
+          </ChatProvider>
           <Analytics />
 
           <Toaster />

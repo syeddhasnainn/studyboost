@@ -15,9 +15,12 @@ export default async function Page() {
       },
       body: JSON.stringify({ user_id: userId }),
     })
+    console.log('fetchUser', fetchUser)
     
     var { userData } = await fetchUser.json() as any;
   }
+
+  
   
   
   const user = await currentUser()

@@ -42,7 +42,7 @@ export function VideoTranscript({ chat_id }: any) {
 
 
   return (
-    <div className="flex flex-col gap-6 p-4">
+    <div className="flex flex-col gap-6 mt-4">
       <div>
         {isLoading ? <div className="flex items-center justify-center">
             <LoadingSpinner />

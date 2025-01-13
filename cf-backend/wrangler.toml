@@ -45,7 +45,7 @@ index_name = "studyninja-test"
 
 [[env.dev.d1_databases]]
 binding = "DB"
-database_name = "studymore-test"
+database_name = "studyboost-dev"
 database_id = "2ea09955-74a8-4ed7-9f93-79318792bf5a"
 
 [[env.dev.r2_buckets]]
