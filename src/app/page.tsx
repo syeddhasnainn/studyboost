@@ -63,6 +63,7 @@ export default async function Page() {
   return (
 
     <main className="min-h-screen bg-gradient-to-b from-white via-blue-50 to-white py-8 text-zinc-800">
+      
       <div className="max-w-6xl mx-auto px-12">
       <nav className="fixed left-1/2 -translate-x-1/2 w-[90%] max-w-2xl mx-auto px-6 py-3 flex items-center justify-between bg-white/50 backdrop-blur-xl rounded-3xl border border-white/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.08)] transition-all duration-300 hover:bg-white/80 hover:shadow-[0_8px_32px_0_rgba(0,0,0,0.12)] z-50">
         <div className="flex items-center gap-2 group">
@@ -357,138 +358,24 @@ export default async function Page() {
         </div>
       </section> */}
 
-      <footer className="container max-w-7xl mx-auto px-8 py-20 mt-20 bg-white/60 backdrop-blur-xl rounded-[2.5rem] border border-white/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.08)]">
-        <div className="grid grid-cols-5 gap-8">
-          <div className="col-span-1">
-            <div className="flex items-center gap-3 mb-6">
-              <Icons.logo className="h-8 w-8 text-blue-600" />
-              <span className="text-[15px] font-medium text-zinc-800">
-                StudyBoost
-              </span>
-            </div>
+      <footer className="container max-w-6xl mx-auto px-16 py-12 mt-20 bg-white/40 backdrop-blur-xl rounded-[2.5rem] border border-white/40">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Icons.logo className="h-8 w-8 text-blue-600" />
+            <span className="text-[15px] font-medium text-zinc-800">
+              StudyBoost
+            </span>
+          </div>
+          <div className="flex items-center gap-8">
             <p className="text-[13px] text-zinc-600">&copy; StudyBoost Inc. {new Date().getFullYear()}</p>
-          </div>
-
-          <div className="col-span-1">
-            <h4 className="text-[15px] font-medium text-zinc-800 mb-4">
-              Platform
-            </h4>
-            <div className="flex flex-col gap-3">
-              <Link
-                href="/create-account"
-                className="text-[13px] text-zinc-600 hover:text-zinc-800 transition-colors"
-              >
-                Create an Account
-              </Link>
-              <Link
-                href="/products"
-                className="text-[13px] text-zinc-600 hover:text-zinc-800 transition-colors"
-              >
-                Products & Subscriptions
-              </Link>
-              <Link
-                href="/donations"
-                className="text-[13px] text-zinc-600 hover:text-zinc-800 transition-colors"
-              >
-                Donations
-              </Link>
-              <Link
-                href="/funding"
-                className="text-[13px] text-zinc-600 hover:text-zinc-800 transition-colors"
-              >
-                Issue Funding
-              </Link>
-            </div>
-          </div>
-
-          <div className="col-span-1">
-            <h4 className="text-[15px] font-medium text-zinc-800 mb-4">
-              Company
-            </h4>
-            <div className="flex flex-col gap-3">
-              <Link
-                href="/careers"
-                className="text-[13px] text-zinc-600 hover:text-zinc-800 transition-colors"
-              >
-                Careers
-              </Link>
-              <Link
-                href="/blog"
-                className="text-[13px] text-zinc-600 hover:text-zinc-800 transition-colors"
-              >
-                Blog
-              </Link>
-              <Link
-                href="/brand"
-                className="text-[13px] text-zinc-600 hover:text-zinc-800 transition-colors"
-              >
-                Brand Assets
-              </Link>
-              <Link
-                href="/terms"
-                className="text-[13px] text-zinc-600 hover:text-zinc-800 transition-colors"
-              >
-                Terms of Service
-              </Link>
-              <Link
-                href="/privacy"
-                className="text-[13px] text-zinc-600 hover:text-zinc-800 transition-colors"
-              >
-                Privacy Policy
-              </Link>
-            </div>
-          </div>
-
-          <div className="col-span-1">
-            <h4 className="text-[15px] font-medium text-zinc-800 mb-4">
-              Community
-            </h4>
-            <div className="flex flex-col gap-3">
-              <Link
-                href="/discord"
-                className="text-[13px] text-zinc-600 hover:text-zinc-800 transition-colors"
-              >
-                Join our Discord
-              </Link>
-              <Link
-                href="/github"
-                className="text-[13px] text-zinc-600 hover:text-zinc-800 transition-colors"
-              >
-                GitHub
-              </Link>
-              <Link
-                href="/twitter"
-                className="text-[13px] text-zinc-600 hover:text-zinc-800 transition-colors"
-              >
-                X / Twitter
-              </Link>
-            </div>
-          </div>
-
-          <div className="col-span-1">
-            <h4 className="text-[15px] font-medium text-zinc-800 mb-4">
-              Support
-            </h4>
-            <div className="flex flex-col gap-3">
-              <Link
-                href="/docs"
-                className="text-[13px] text-zinc-600 hover:text-zinc-800 transition-colors"
-              >
-                Docs
-              </Link>
-              <Link
-                href="/faq"
-                className="text-[13px] text-zinc-600 hover:text-zinc-800 transition-colors"
-              >
-                FAQ
-              </Link>
-              <Link
-                href="/contact"
-                className="text-[13px] text-zinc-600 hover:text-zinc-800 transition-colors"
-              >
-                Contact
-              </Link>
-            </div>
+            <a 
+              href="https://x.com/syeddhasnainn" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="text-[13px] text-zinc-600 hover:text-zinc-800 transition-colors"
+            >
+              Made with ♥️ by Hasnain
+            </a>
           </div>
         </div>
       </footer>

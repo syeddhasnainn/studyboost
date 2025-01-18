@@ -36,21 +36,17 @@ export function ChatUI({ chatId }: { chatId: string }) {
   const { data: messages, isLoading: isFetching, mutate } = useSWR<IMessage>(
     `${process.env.NEXT_PUBLIC_API_URL}/db/getMessages?chatId=${chatId}`,
     fetcher,
-    { refreshInterval: 1000 }
+    {
+      onSuccess: (data)=> {
+        setChatMessages(data.messages)
+      }
+    }
   );
 
   const { data: chat } = useSWRImmutable<ChatInfoProps>(
     `${process.env.NEXT_PUBLIC_API_URL}/db/getChat?chatId=${chatId}`,
     fetcher
-  );
-
-  useEffect(() => {
-    if (messages) {
-      setChatMessages(messages.messages);
-    }
-  }, [messages]);
-
-  console.log("chat message", chatMessages);
+  )
 
   const resourceUrl = chat?.chat.resource_link;
   const resourceId = chat?.chat.resource_id;

@@ -17,4 +17,3 @@ An AI-powered learning platform that transforms educational content into interac
 - Cloudflare Workers
 - Together AI
 - Shadcn UI + Tailwind CSS
-- Zustand for state management

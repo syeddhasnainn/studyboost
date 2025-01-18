@@ -8,8 +8,7 @@ import {
 import type { Metadata } from "next";
 import { Toaster } from "@/components/ui/toaster"
 import { Analytics } from "@vercel/analytics/react"
-// import { Inter, Geist } from "next/font/google";
-import { GeistSans } from "geist/font/sans";
+import { Manrope, Syne_Tactile, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { ChatProvider } from "@/context/ChatContext";
 
@@ -19,6 +18,12 @@ export const metadata: Metadata = {
   description: "StudyBoost is an AI-powered learning platform that transforms educational content into interactive study sessions.",
 };
 
+
+const manrope = Manrope({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+});
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -26,7 +31,7 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en">
+      <html lang="en" className={`${manrope.className} antialiased`}>
 
         <body>
           <SignedOut>

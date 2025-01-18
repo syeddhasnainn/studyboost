@@ -9,7 +9,7 @@ import {
   MessageCircleQuestion,
   Plus,
   Settings2,
-  Trash2
+  Trash2,
 } from "lucide-react";
 import * as React from "react";
 
@@ -19,29 +19,13 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { NavFavorites } from "./nav-favorites";
+import { NavFavorites } from "./nav-chats";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
-import { TeamSwitcher } from "./team-switcher";
+import { SidebarLogo } from "./nav-logo";
+import useSWR from "swr";
 // This is sample data.
 const data = {
-  teams: [
-    {
-      name: "StudyBoost",
-      logo: ChevronsUp,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
   navMain: [
     {
       title: "New Chat",
@@ -244,46 +228,35 @@ const data = {
 // };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const [test, setTest] = React.useState([]);
 
-  const [test, setTest] = React.useState([])
-  // const [user, setUser] = React.useState({})
+  const fetcher = async (url: string) => {
+    const response = await fetch(url);
+    const { results } = (await response.json()) as any;
+    return results;
+  };
 
-  // React.useEffect(() => {
-  //   const getUserDetails = async () => {
-  //     const user = await currentUser()
-      
-  //     if (user) setUser(user);
-      
-  //   }
-  //   getUserDetails();
-  // },[])
-
-
-  const fetchChats = async () => {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/db/getAllChats`);
-    const {results} = await response.json() as any
-    const chats = results.map((chat : any) => ({
-      name: chat.chat_id,
-      url: chat.chat_id,
-    }))
-    setTest(chats);
-  }
-
-  React.useEffect(() => {
-    fetchChats();
-  }, []);
+  const { isLoading } = useSWR(
+    `${process.env.NEXT_PUBLIC_API_URL}/db/getAllChats`,
+    fetcher,
+    {
+      onSuccess: (data) => {
+        setTest(data);
+      },
+    }
+  );
 
   return (
     <Sidebar className="border-r-0" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
-        <NavMain items={data.navMain} />
+        <SidebarLogo />
+        {/* <NavMain items={data.navMain} /> */}
       </SidebarHeader>
       <SidebarContent>
-        <NavFavorites favorites={test} />
+        <NavFavorites favorites={test} isLoading={isLoading} />
         {/* <NavWorkspaces workspaces={data.workspaces} /> */}
       </SidebarContent>
-      <NavUser  />
+      <NavUser />
       <SidebarRail />
     </Sidebar>
   );
