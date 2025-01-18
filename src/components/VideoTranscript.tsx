@@ -1,7 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { fetcher } from "@/lib/utils";
-import useSWR from "swr";
-import { LoadingSpinner } from "./ui/loading-spinner";
+import { Spinner } from "@/components/loading";
 
 function formatTime(seconds: string): string {
   const sec = parseInt(seconds);
@@ -19,36 +17,61 @@ function formatTime(seconds: string): string {
   return parts.join(":");
 }
 
-export function VideoTranscript({ chat_id }: any) {
+const handleTimestampClick = (timestamp: string) => {
+  const iframe = document.querySelector("iframe");
+  if (iframe && iframe.contentWindow) {
+    iframe.contentWindow.postMessage(
+      JSON.stringify({
+        event: "command",
+        func: "seekTo",
+        args: [parseInt(timestamp), true],
+      }),
+      "*"
+    );
+  }
+};
 
-  const handleTimestampClick = (timestamp: string) => {
-    const iframe = document.querySelector("iframe");
-    if (iframe && iframe.contentWindow) {
-      iframe.contentWindow.postMessage(
-        JSON.stringify({
-          event: "command",
-          func: "seekTo",
-          args: [parseInt(timestamp), true],
-        }),
-        "*"
-      );
-    }
-  };
-
-  const { data, isLoading } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_URL}/db/getSummary?chatId=${chat_id}`,
-    fetcher, {fallbackData: []}
-  ) as any;
-
-
+export async function VideoTranscript({ chat_id }: any) {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/db/getSummary?chatId=${chat_id}`
+  );
+  // const data = await response.json();
+  const data = [
+    {
+      summary: [
+        {
+          chapter: "Introduction",
+          title: "Welcome to the Course",
+          content: "Overview of what will be covered in this video",
+          timestmp: "0",
+        },
+        {
+          chapter: "Chapter 1",
+          title: "Getting Started",
+          content: "Basic concepts and setup instructions",
+          timestmp: "120",
+        },
+        {
+          chapter: "Chapter 2",
+          title: "Core Concepts",
+          content: "Deep dive into the main topics",
+          timestmp: "300",
+        },
+        {
+          chapter: "Conclusion",
+          title: "Wrap Up",
+          content: "Summary and next steps",
+          timestmp: "600",
+        },
+      ],
+    },
+  ];
   return (
     <div className="flex flex-col gap-6 mt-4">
       <div>
-        {isLoading ? <div className="flex items-center justify-center">
-            <LoadingSpinner />
-
-          </div>: <div className="space-y-4">
-            {data.summary.map((chapter: any, index: number) : any => (
+        {
+          <div className="space-y-4">
+            {data[0].summary.map((chapter: any, index: number): any => (
               <Card
                 key={index}
                 className="p-4 hover:bg-gray-100 hover:cursor-pointer"
@@ -65,7 +88,8 @@ export function VideoTranscript({ chat_id }: any) {
                 </p>
               </Card>
             ))}
-          </div> }
+          </div>
+        }
       </div>
     </div>
   );

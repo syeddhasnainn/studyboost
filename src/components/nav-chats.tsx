@@ -26,7 +26,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Spinner } from "@/components/loading";
-export function NavFavorites({ favorites, isLoading }: any) {
+export function SidebarChats({ sidebarChats, isLoading }: any) {
   const { isMobile } = useSidebar();
 
   return (
@@ -40,7 +40,7 @@ export function NavFavorites({ favorites, isLoading }: any) {
             </span>
           </SidebarMenuButton>
         ) : (
-          favorites.map((item: any) => (
+          sidebarChats.map((item: any) => (
             <SidebarMenuItem key={item.name}>
               <SidebarMenuButton asChild>
                 <Link

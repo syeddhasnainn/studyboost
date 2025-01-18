@@ -3,13 +3,11 @@ import { PDFViewer } from "@/components/PDFViewer";
 import { ResizableHandle, ResizablePanel } from "@/components/ui/resizable";
 import { Textarea } from "@/components/ui/textarea";
 import { VideoTranscript } from "@/components/VideoTranscript";
-import { fetcher } from "@/lib/utils";
-import { ChatMessagesProps } from "@/types/chat";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import * as ResizablePrimitive from "react-resizable-panels";
-import useSWR from "swr";
-import useSWRImmutable from "swr/immutable";
 import { Button } from "../ui/button";
+import { Spinner } from "../loading";
+import { fetchTranscript } from "@/actions/transcript";
 
 export interface ChatInfoProps {
   chat: {
@@ -28,29 +26,28 @@ interface IMessage {
   messages: Message[];
 }
 
-export function ChatUI({ chatId }: { chatId: string }) {
-  const [chatMessages, setChatMessages] = useState<Message[]>([]);
+export function ChatUI({
+  chatInfo,
+  messagesResponse,
+}: {
+  chatInfo: any;
+  messagesResponse: any;
+}) {
+  const {
+    value: { chat },
+  } = chatInfo;
+
+  const { value: messages } = messagesResponse;
+  const {
+    resource_id: resourceId,
+    resource_link: resourceUrl,
+    chat_id: chatId,
+  } = chat;
+
   const [isLoading, setIsLoading] = useState(false);
   const questionRef = useRef<HTMLTextAreaElement>(null);
-
-  const { data: messages, isLoading: isFetching, mutate } = useSWR<IMessage>(
-    `${process.env.NEXT_PUBLIC_API_URL}/db/getMessages?chatId=${chatId}`,
-    fetcher,
-    {
-      onSuccess: (data)=> {
-        setChatMessages(data.messages)
-      }
-    }
-  );
-
-  const { data: chat } = useSWRImmutable<ChatInfoProps>(
-    `${process.env.NEXT_PUBLIC_API_URL}/db/getChat?chatId=${chatId}`,
-    fetcher
-  )
-
-  const resourceUrl = chat?.chat.resource_link;
-  const resourceId = chat?.chat.resource_id;
-
+  const [chatMessages, setChatMessages] = useState<Message[]>(messages);
+  const [summary, setSummary] = useState<any>(null);
   async function handleSubmit(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -70,7 +67,7 @@ export function ChatUI({ chatId }: { chatId: string }) {
           body: JSON.stringify({
             message: newMessage,
             resourceId,
-            chatId: chat?.chat.chat_id,
+            chatId,
           }),
         });
 
@@ -104,15 +101,19 @@ export function ChatUI({ chatId }: { chatId: string }) {
         await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat`, {
           method: "PUT",
           body: JSON.stringify({
-            chatId: chat?.chat.chat_id,
+            chatId,
             content: assistantMessage.content,
           }),
         });
-
-        mutate();
       }
     }
   }
+
+  const summarize = async () => {
+    const response = await fetchTranscript(resourceId);
+    console.log(response);
+    setSummary(response);
+  };
 
   return (
     <div className="flex flex-1 p-4 my-14 pt-0 ">
@@ -136,10 +137,12 @@ export function ChatUI({ chatId }: { chatId: string }) {
 
               <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide">
                 <div className="flex gap-4">
-                  <Button variant="secondary">Extract Summary</Button>
+                  <Button onClick={summarize} variant="secondary">
+                    Extract Summary
+                  </Button>
                 </div>
                 <div>
-                  <VideoTranscript chat_id={chat?.chat.chat_id} />
+                  <VideoTranscript chatId={chatId} />
                 </div>
               </div>
             </div>
@@ -167,29 +170,7 @@ export function ChatUI({ chatId }: { chatId: string }) {
                   ))}
                   {isLoading && (
                     <li className="flex items-center gap-2 p-3">
-                      <div className="animate-spin">
-                        <svg
-                          className="w-4 h-4 text-gray-400"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          ></circle>
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          ></path>
-                        </svg>
-                      </div>
-                      <span className="text-sm text-gray-500">Thinking...</span>
+                      <Spinner size="xs" />
                     </li>
                   )}
                 </ul>
