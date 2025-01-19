@@ -3,6 +3,9 @@ main = "src/index.ts"
 compatibility_date = "2024-11-06"
 
 
+[observability.logs]
+enabled = true
+
 
 [placement]
 mode = "smart"
@@ -52,3 +55,6 @@ database_id = "2ea09955-74a8-4ed7-9f93-79318792bf5a"
 binding = "MY_BUCKET"
 bucket_name = "studymore-dev"
 preview_bucket_name = "studymore-test"
+
+
+

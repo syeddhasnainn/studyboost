@@ -1,9 +1,5 @@
 import { Hono } from "hono";
 import Together from "together-ai";
-import {
-  YoutubeTranscript,
-  YoutubeTranscriptTooManyRequestError,
-} from "youtube-transcript";
 import { cors } from "hono/cors";
 import { z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
@@ -44,7 +40,6 @@ app.use(
     credentials: true,
   })
 );
-
 
 function iteratorToStream(iterator: any) {
   return new ReadableStream({
@@ -160,6 +155,7 @@ app.put("/chat", async (c) => {
 app.post("/vectors", async (c) => {
   try {
     const { chunks, resourceId } = await c.req.json();
+    console.log("chunks:", chunks);
     if (!chunks?.length || !resourceId) {
       return c.json({ error: "Missing required fields" }, 400);
     }
@@ -172,12 +168,15 @@ app.post("/vectors", async (c) => {
       { text: chunks }
     );
 
+
+
     const payload = chunks.map((text: string, index: number) => ({
       id: `${resourceId}_${index}`,
       values: embeddings[index],
       metadata: { text, resourceId },
     }));
 
+    console.log("payload:", payload);
     const inserted = await c.env.VECTORIZE.upsert(payload);
 
     return c.json({
@@ -302,29 +301,6 @@ app.get("/db/getAllChats", async (c) => {
     "SELECT * FROM chats ORDER BY created_at DESC;"
   ).all();
   return c.json({ results });
-});
-
-app.get("/youtube/transcript", async (c) => {
-  const videoId = c.req.query("videoId");
-
-  if (!videoId) {
-    return c.json({ error: "Video ID is required" }, 400);
-  }
-
-  try {
-    const transcript = await YoutubeTranscript.fetchTranscript(videoId);
-    if (!transcript.length || transcript[0].lang !== "en") {
-      return c.json({ error: "No transcript found" }, 400);
-    }
-
-    const textForSummary = transcript
-      .map((entry) => `${entry.text} - ${entry.offset}`)
-      .join(" | ");
-
-    return c.json({ transcript });
-  } catch (error) {
-    return c.json({ error: "Failed to fetch transcript" }, 500);
-  }
 });
 
 // New route for AI summary
