@@ -15,6 +15,7 @@ interface Bindings {
 
 const app = new Hono<{ Bindings: Bindings }>();
 
+
 let together: Together;
 
 app.use("*", async (c, next) => {
@@ -26,17 +27,16 @@ app.use("*", async (c, next) => {
   await next();
 });
 
+
+
 app.use(
   "*",
   cors({
-    origin: [
-      "*",
-      "https://studyboost.vercel.app",
-      "http://localhost:3000",
-      "https://studyboost.org",
-      "https://www.studyboost.org",
-      "https://studyboost.org",
-    ],
+    origin: "https://studyboost.org",
+    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowHeaders: ["Origin", "Content-Type", "Accept", "Authorization"],
+    exposeHeaders: ["Content-Length", "X-Kuma-Revision"],
+    maxAge: 600,
     credentials: true,
   })
 );
@@ -71,7 +71,7 @@ async function* makeIterator(messages: any) {
 }
 
 app.get("/", async (c) => {
-  return c.json({ message: "how did you get here?" });
+  return c.json({ message: "cors2" });
 });
 
 app.post("/chat", async (c) => {
@@ -167,8 +167,6 @@ app.post("/vectors", async (c) => {
       "@cf/baai/bge-small-en-v1.5",
       { text: chunks }
     );
-
-
 
     const payload = chunks.map((text: string, index: number) => ({
       id: `${resourceId}_${index}`,
