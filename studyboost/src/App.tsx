@@ -1,12 +1,21 @@
 "use client";
 
+import { Routes } from "react-router";
+
+import { Route } from "react-router";
+import Home from "@/pages/Home";
+import Chat from "@/pages/Chat";
+
 // import { Authenticated, Unauthenticated } from "convex/react";
 // import { SignInButton, SignUpButton, UserButton } from "@clerk/clerk-react";
 
 export default function App() {
   return (
     <>
-      <div>test</div>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/chat" element={<Chat />} />
+      </Routes>
     </>
   );
 }
