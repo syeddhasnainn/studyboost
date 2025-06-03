@@ -35,9 +35,6 @@ export function ChatForm({ userId }: { userId: string }) {
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
-  const [isYoutube, setIsYoutube] = useState(false);
-  const [isPdf, setIsPdf] = useState(false);
-
   function splitIntoChunks(str: string, chunkSize: number) {
     let chunks = [];
     for (let i = 0; i < str.length; i += chunkSize) {
@@ -67,7 +64,6 @@ export function ChatForm({ userId }: { userId: string }) {
       setProgress(10);
 
       const youtubeId = youtubeUrl.split("v=")[1];
-      console.log("youtubeId:", youtubeId);
       const chats = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/db/getAllChats`
       );
@@ -87,8 +83,13 @@ export function ChatForm({ userId }: { userId: string }) {
       setProgress(30);
 
       try {
-        const transcript = (await fetchTranscript(youtubeId)) as string;
-        var chunks = splitIntoChunks(transcript, 200);
+        const transcript = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/getTranscript/${youtubeId}`
+        );
+        const transcriptText = await transcript.json();
+        console.log("transcriptText:", transcriptText);
+        console.log("transcriptText:", transcriptText);
+        var chunks = splitIntoChunks(transcriptText, 200);
         setProgress(50);
       } catch (error) {
         toast({

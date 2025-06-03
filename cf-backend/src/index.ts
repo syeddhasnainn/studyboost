@@ -3,6 +3,7 @@ import Together from "together-ai";
 import { cors } from "hono/cors";
 import { z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
+import { YoutubeTranscript } from "youtube-transcript";
 
 interface Bindings {
   MY_BUCKET: R2Bucket;
@@ -15,7 +16,6 @@ interface Bindings {
 
 const app = new Hono<{ Bindings: Bindings }>();
 
-
 let together: Together;
 
 app.use("*", async (c, next) => {
@@ -27,12 +27,10 @@ app.use("*", async (c, next) => {
   await next();
 });
 
-
-
 app.use(
   "*",
   cors({
-    origin: "https://studyboost.org",
+    origin: "*",
     allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowHeaders: ["Origin", "Content-Type", "Accept", "Authorization"],
     exposeHeaders: ["Content-Length", "X-Kuma-Revision"],
@@ -71,7 +69,18 @@ async function* makeIterator(messages: any) {
 }
 
 app.get("/", async (c) => {
-  return c.json({ message: "cors2" });
+  return c.json({ message: "back in biz" });
+});
+
+app.get("/getTranscript/:videoId", async (c) => {
+  const videoId = c.req.param("videoId");
+  console.log("videoId:", videoId);
+  const transcript = await YoutubeTranscript.fetchTranscript(videoId);
+  var transcriptText = transcript
+    .map((entry) => `${entry.text} - ${entry.offset}`)
+    .join(" | ");
+
+  return c.json({ transcriptText });
 });
 
 app.post("/chat", async (c) => {

@@ -1,7 +1,4 @@
 import { ChatUI } from "@/components/chat/ChatUI";
-// import Loading from "@/components/loading";
-import { IMessage } from "@/types/api";
-import { Suspense } from "react";
 
 interface PageProps {
   params: {
@@ -32,7 +29,6 @@ export default async function ChatPage({ params }: PageProps) {
     getMessages(chatId),
     getChatInfo(chatId),
   ]);
-
 
   return <ChatUI chatInfo={chatInfo} messagesResponse={messages} />;
 }
